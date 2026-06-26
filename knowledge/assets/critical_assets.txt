@@ -1,0 +1,9 @@
+Finance Server
+
+Payroll Database
+
+Office365
+
+Azure AD
+
+Domain Controller

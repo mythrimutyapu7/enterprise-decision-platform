@@ -1,0 +1,6 @@
+Remote access from high-risk countries
+requires manager approval.
+
+VPN usage is mandatory.
+
+Unknown devices require verification.

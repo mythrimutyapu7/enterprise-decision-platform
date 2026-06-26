@@ -1,0 +1,6 @@
+All privileged users must authenticate using Multi-Factor Authentication.
+
+If a login originates from a new country,
+additional verification must be performed.
+
+Disable accounts after confirmed compromise.
