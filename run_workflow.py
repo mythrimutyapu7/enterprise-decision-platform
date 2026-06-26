@@ -26,3 +26,7 @@ planner = Planner()
 result = planner.run(state)
 
 print(result.model_dump())
+print("\n====================")
+print("CONTEXT")
+print("====================")
+print(result.context.model_dump())
