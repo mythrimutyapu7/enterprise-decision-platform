@@ -38,3 +38,19 @@ print("\n====================")
 print("RECOMMENDATION")
 print("====================")
 print(result.recommendation.model_dump())
+
+from human.approval import HumanApproval
+
+approval = HumanApproval()
+
+approval.approve(result, "Security Analyst")
+
+print(result.approval.model_dump())
+
+from memory.memory_agent import MemoryAgent
+
+memory = MemoryAgent()
+
+memory.save(result)
+
+print(memory.load())
