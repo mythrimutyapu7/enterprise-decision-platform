@@ -38,7 +38,7 @@ Company Knowledge
 {company_knowledge}
 """
 
-        result = self.llm.generate(prompt)
+        result = self.llm.generate_json(prompt)
 
         state.context.security_policies = result.get(
             "security_policies", []

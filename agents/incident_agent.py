@@ -25,7 +25,7 @@ Incident Description:
 {state.incident.description}
 """
 
-        result = self.llm.generate(full_prompt)
+        result = self.llm.generate_json(full_prompt)
 
         state.incident.summary = result["summary"]
         state.incident.incident_type = result["incident_type"]

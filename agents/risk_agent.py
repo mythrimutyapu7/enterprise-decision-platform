@@ -48,7 +48,7 @@ Organizational Notes:
 {state.context.organizational_notes}
 """
 
-        result = self.llm.generate(prompt)
+        result = self.llm.generate_json(prompt)
 
         state.analysis.risk_level = result.get("risk_level")
         state.analysis.risk_score = result.get("risk_score")

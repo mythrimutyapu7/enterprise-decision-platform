@@ -1,16 +1,15 @@
 import os
 import json
+import time
 
 from dotenv import load_dotenv
 from google import genai
+from loguru import logger
 
 load_dotenv()
 
 
 class LLMService:
-    """
-    Wrapper around Google's Gemini API.
-    """
 
     def __init__(self):
 
@@ -23,21 +22,46 @@ class LLMService:
 
         self.model = "gemini-2.5-flash"
 
-    import json
-
-
-    def generate(self, prompt: str):
+    def generate_text(self, prompt: str):
 
         response = self.client.models.generate_content(
             model=self.model,
             contents=prompt,
         )
 
-        text = response.text.strip()
-
-        # Remove Markdown code fences if Gemini returns them
-        text = text.replace("```json", "").replace("```", "").strip()
-
-        return json.loads(text)
-
         return response.text
+
+    def generate_json(self, prompt: str):
+
+        retries = 3
+
+        for attempt in range(retries):
+
+            try:
+
+                response = self.client.models.generate_content(
+                    model=self.model,
+                    contents=prompt,
+                )
+
+                text = response.text.strip()
+
+                text = (
+                    text
+                    .replace("```json", "")
+                    .replace("```", "")
+                    .strip()
+                )
+
+                return json.loads(text)
+
+            except Exception as e:
+
+                logger.warning(
+                    f"Gemini failed ({attempt+1}/{retries}): {e}"
+                )
+
+                if attempt == retries - 1:
+                    raise
+
+                time.sleep(2)
