@@ -22,11 +22,21 @@ class LLMService:
 
         self.model = "gemini-2.5-flash"
 
+    import json
+
+
     def generate(self, prompt: str):
 
         response = self.client.models.generate_content(
             model=self.model,
             contents=prompt,
         )
+
+        text = response.text.strip()
+
+        # Remove Markdown code fences if Gemini returns them
+        text = text.replace("```json", "").replace("```", "").strip()
+
+        return json.loads(text)
 
         return response.text

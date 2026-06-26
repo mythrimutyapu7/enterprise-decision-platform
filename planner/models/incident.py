@@ -1,4 +1,5 @@
 from typing import Optional
+from typing import List
 
 from pydantic import BaseModel, Field
 
@@ -10,12 +11,17 @@ class IncidentInfo(BaseModel):
     """
 
     incident_id: Optional[int] = None
+    summary: Optional[str] = None
+    incident_type: Optional[str] = None
 
     title: str = Field(..., description="Title of the incident")
 
     description: str = Field(
         ...,
         description="Detailed description of the incident"
+    )
+    key_findings: List[str] = Field(
+    default_factory=list
     )
 
     severity: Optional[str] = Field(
@@ -32,5 +38,7 @@ class IncidentInfo(BaseModel):
         default=None,
         description="Path to uploaded evidence file"
     )
+
+    
 
     created_by: Optional[str] = None
