@@ -4,6 +4,7 @@ from api.auth import router as auth_router
 from api.incidents import router as incident_router
 from api.upload import router as upload_router
 from api.analysis import router as analysis_router
+from api.recommendations import router as recommendation_router
 
 
 app = FastAPI(
@@ -15,6 +16,7 @@ app.include_router(auth_router)
 app.include_router(incident_router)
 app.include_router(upload_router)
 app.include_router(analysis_router)
+app.include_router(recommendation_router)
 
 @app.get("/")
 async def root():
