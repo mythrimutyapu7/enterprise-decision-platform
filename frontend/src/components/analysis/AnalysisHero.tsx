@@ -19,43 +19,37 @@ const severityColor: Record<string, string> = {
 
 export default function AnalysisHero({ incident }: Props) {
 
-    return (
+   return (
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="glass-card overflow-hidden p-0"
+    >
 
-        <motion.div
+        {/* Header */}
 
-            initial={{ opacity:0, y:20 }}
+        <div className="border-b border-white/10 bg-gradient-to-r from-[#111827] to-[#172554] p-8">
 
-            animate={{ opacity:1, y:0 }}
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
 
-            className="rounded-3xl border border-slate-700 bg-[#121826] p-8 shadow-2xl"
+                <div className="max-w-4xl">
 
-        >
-
-            <div className="flex items-start justify-between flex-wrap gap-8">
-
-                <div>
-
-                    <p className="text-xs uppercase tracking-[0.35em] text-blue-400">
-
+                    <p className="eyebrow text-blue-400">
                         AI INCIDENT REPORT
-
                     </p>
 
                     <h1 className="mt-3 text-4xl font-bold text-white">
-
                         {incident.title}
-
                     </h1>
 
-                    <p className="mt-5 max-w-3xl text-slate-300 leading-7">
-
+                    <p className="mt-5 leading-8 text-slate-300">
                         {incident.summary}
-
                     </p>
 
                 </div>
 
-                <div>
+                <div className="flex flex-col items-end gap-3">
 
                     <span
                         className={`rounded-full border px-5 py-2 font-semibold ${
@@ -66,88 +60,79 @@ export default function AnalysisHero({ incident }: Props) {
                         {incident.severity}
                     </span>
 
-                </div>
-
-            </div>
-
-            <div className="mt-10 grid md:grid-cols-4 gap-5">
-
-                <div className="rounded-2xl bg-slate-900 p-5 border border-slate-700">
-
-                    <FiShield className="text-blue-400 text-2xl" />
-
-                    <p className="mt-4 text-xs uppercase text-slate-500">
-
-                        Incident Type
-
-                    </p>
-
-                    <h3 className="mt-2 font-semibold text-white">
-
-                        {incident.incident_type}
-
-                    </h3>
-
-                </div>
-
-                <div className="rounded-2xl bg-slate-900 p-5 border border-slate-700">
-
-                    <FiDatabase className="text-cyan-400 text-2xl" />
-
-                    <p className="mt-4 text-xs uppercase text-slate-500">
-
-                        Source
-
-                    </p>
-
-                    <h3 className="mt-2 font-semibold text-white">
-
-                        {incident.source}
-
-                    </h3>
-
-                </div>
-
-                <div className="rounded-2xl bg-slate-900 p-5 border border-slate-700">
-
-                    <FiCpu className="text-violet-400 text-2xl" />
-
-                    <p className="mt-4 text-xs uppercase text-slate-500">
-
-                        AI Classification
-
-                    </p>
-
-                    <h3 className="mt-2 font-semibold text-white">
-
-                        {incident.incident_type}
-
-                    </h3>
-
-                </div>
-
-                <div className="rounded-2xl bg-slate-900 p-5 border border-slate-700">
-
-                    <FiAlertTriangle className="text-red-400 text-2xl" />
-
-                    <p className="mt-4 text-xs uppercase text-slate-500">
-
-                        Severity
-
-                    </p>
-
-                    <h3 className="mt-2 font-semibold text-white">
-
-                        {incident.severity}
-
-                    </h3>
+                    <span className="rounded-full bg-green-500/15 px-4 py-2 text-xs uppercase tracking-[0.25em] text-green-300">
+                        AI Verified
+                    </span>
 
                 </div>
 
             </div>
 
-        </motion.div>
+        </div>
 
-    );
+        {/* Stats */}
+
+        <div className="grid gap-5 p-8 md:grid-cols-2 xl:grid-cols-4">
+
+            <div className="premium-panel">
+
+                <FiShield className="text-3xl text-blue-400"/>
+
+                <p className="mt-5 text-xs uppercase tracking-[0.22em] text-slate-500">
+                    Incident Type
+                </p>
+
+                <h3 className="mt-2 text-lg font-semibold text-white">
+                    {incident.incident_type}
+                </h3>
+
+            </div>
+
+            <div className="premium-panel">
+
+                <FiDatabase className="text-3xl text-cyan-400"/>
+
+                <p className="mt-5 text-xs uppercase tracking-[0.22em] text-slate-500">
+                    Detection Source
+                </p>
+
+                <h3 className="mt-2 text-lg font-semibold text-white">
+                    {incident.source}
+                </h3>
+
+            </div>
+
+            <div className="premium-panel">
+
+                <FiCpu className="text-3xl text-violet-400"/>
+
+                <p className="mt-5 text-xs uppercase tracking-[0.22em] text-slate-500">
+                    AI Classification
+                </p>
+
+                <h3 className="mt-2 text-lg font-semibold text-white">
+                    {incident.incident_type}
+                </h3>
+
+            </div>
+
+            <div className="premium-panel">
+
+                <FiAlertTriangle className="text-3xl text-red-400"/>
+
+                <p className="mt-5 text-xs uppercase tracking-[0.22em] text-slate-500">
+                    Threat Severity
+                </p>
+
+                <h3 className="mt-2 text-lg font-semibold text-white">
+                    {incident.severity}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </motion.div>
+);
 
 }
