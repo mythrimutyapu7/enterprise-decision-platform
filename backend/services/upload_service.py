@@ -1,7 +1,7 @@
 import os
 import shutil
 from database.mongodb import database
-
+from datetime import datetime
 files_collection = database["incident_files"]
 
 UPLOAD_FOLDER = "uploads"
@@ -20,7 +20,8 @@ async def upload_file(file):
 
         file_data = {
             "filename": file.filename,
-            "file_path": file_path
+            "file_path": file_path,
+            "uploaded_at": datetime.utcnow()
         }
 
         result = await files_collection.insert_one(file_data)

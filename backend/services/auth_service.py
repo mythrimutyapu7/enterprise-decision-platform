@@ -1,6 +1,7 @@
 from database.mongodb import database
 from utils.security import hash_password, verify_password
 from utils.jwt_handler import create_access_token
+from datetime import datetime
 
 # MongoDB Collection
 users_collection = database["users"]
@@ -28,7 +29,8 @@ async def register_user(user):
             "name": user.name,
             "email": user.email,
             "password": hashed_password,
-            "role": user.role
+            "role": user.role,
+            "created_at": datetime.utcnow()
         }
 
         # Insert into MongoDB

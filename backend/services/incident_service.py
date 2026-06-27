@@ -1,5 +1,6 @@
 from database.mongodb import database
 from bson import ObjectId
+from datetime import datetime
 
 incidents_collection = database["incidents"]
 
@@ -11,7 +12,8 @@ async def create_incident(incident):
             "description": incident.description,
             "severity": incident.severity,
             "status": incident.status,
-            "created_by": incident.created_by
+            "created_by": incident.created_by,
+            "created_at": datetime.utcnow()
         }
 
         result = await incidents_collection.insert_one(incident_data)

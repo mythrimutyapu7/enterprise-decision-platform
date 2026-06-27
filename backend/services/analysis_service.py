@@ -1,3 +1,5 @@
+from datetime import datetime
+
 async def analyze_incident(id: str):
     return {
         "success": True,
@@ -8,5 +10,6 @@ async def analyze_incident(id: str):
         "reasoning": [
             "Multiple failed logins",
             "Login from suspicious location"
-        ]
+        ],
+        "created_at": datetime.utcnow()
     }
