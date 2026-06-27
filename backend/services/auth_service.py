@@ -1,5 +1,6 @@
 from database.mongodb import database
 from utils.security import hash_password, verify_password
+from utils.jwt_handler import create_access_token
 
 # MongoDB Collection
 users_collection = database["users"]
@@ -73,9 +74,18 @@ async def login_user(user):
             }
 
         # Login successful
+        token = create_access_token(
+        {
+            "sub": existing_user["email"],
+            "role": existing_user["role"]
+            }
+        )
+
         return {
             "success": True,
             "message": "Login Successful",
+            "access_token": token,
+            "token_type": "bearer",
             "user": {
                 "id": str(existing_user["_id"]),
                 "name": existing_user["name"],
