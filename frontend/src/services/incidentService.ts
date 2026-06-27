@@ -84,17 +84,16 @@ export const deleteIncident = async (id: string) => {
   return response.data;
 };
 
-export const analyzeIncident = async (id: string): Promise<AnalysisResponse> => {
-  const response = await api.post<AnalysisResponse | BackendAnalysisResponse>(`/incidents/${id}/analyze`);
-  if ('analysis' in response.data || 'data' in response.data) {
-    const analysis = response.data.analysis || response.data.data || {};
-    return {
-      incidentSummary: analysis.incidentSummary || {},
-      context: analysis.context || {},
-      riskAnalysis: analysis.riskAnalysis || {},
-      recommendations: analysis.recommendations || {},
-      approval: analysis.approval || {},
-    };
-  }
-  return response.data;
+export const analyzeIncident = async (id: string): Promise<any> => {
+  const response = await api.post(`/incidents/${id}/analyze`);
+
+  const result = response.data.analysis;
+
+  return {
+    incident: result.incident,
+    context: result.context,
+    analysis: result.analysis,
+    recommendation: result.recommendation,
+    approval: result.approval,
+  };
 };
