@@ -18,8 +18,10 @@ export interface IncidentDetail extends IncidentSummary {
 export interface CreateIncidentRequest {
   title: string;
   description: string;
-  source: string;
+  severity: IncidentSeverity;
+  status: IncidentStatus;
   createdBy: string;
+  source?: string;
 }
 
 export interface AnalysisResponse {

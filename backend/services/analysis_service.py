@@ -18,10 +18,17 @@ async def analyze_incident(id: str):
         "severity": incident["severity"],
         "source": "Microsoft Sentinel"
     }
+    try:
+        result = run_ai_analysis(ai_input)
 
-    result = run_ai_analysis(ai_input)
+        return {
+            "success": True,
+            "analysis": result
+        }
 
-    return {
-        "success": True,
-        "analysis": result
-    }
+    except Exception as e:
+        # Return structured error instead of allowing an uncaught exception
+        return {
+            "success": False,
+            "error": f"AI analysis failed: {str(e)}"
+        }
