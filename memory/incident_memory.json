@@ -223,5 +223,127 @@
             "approval_timestamp": "2026-06-27T12:07:27.563118",
             "execution_status": "Approved"
         }
+    },
+    {
+        "incident": {
+            "incident_id": 1,
+            "summary": "An account experienced 15 consecutive failed login attempts, immediately followed by a successful login.",
+            "incident_type": "Suspicious Login Activity / Potential Account Compromise",
+            "title": "Suspicious Login",
+            "description": "15 failed logins followed by successful login.",
+            "key_findings": [],
+            "severity": "High",
+            "source": "Microsoft Sentinel",
+            "uploaded_file": null,
+            "created_by": null
+        },
+        "context": {
+            "security_policies": [
+                "Failed login attempts exceeding 10\nmust trigger an investigation."
+            ],
+            "incident_playbooks": [
+                {
+                    "title": "Credential Compromise",
+                    "steps": [
+                        "Reset Password",
+                        "Disable Account",
+                        "Revoke Active Sessions",
+                        "Verify MFA",
+                        "Notify SOC",
+                        "Review Audit Logs",
+                        "Close Incident"
+                    ]
+                }
+            ],
+            "threat_intelligence": [],
+            "affected_assets": [],
+            "organizational_notes": [
+                {
+                    "title": "Incident 1",
+                    "description": "Credential compromise",
+                    "resolution": "Resolved by password reset"
+                }
+            ]
+        },
+        "analysis": {
+            "risk_level": "High",
+            "risk_score": 85,
+            "confidence": 90,
+            "indicators": [
+                "15 consecutive failed login attempts",
+                "Immediate successful login following failed attempts",
+                "Incident Type: Suspicious Login Activity / Potential Account Compromise",
+                "Severity: High",
+                "Organizational policy triggered: 'Failed login attempts exceeding 10 must trigger an investigation'"
+            ],
+            "missing_information": [
+                "Identity and role of the compromised account (e.g., admin, executive, service account)",
+                "Geographic location and IP address of login attempts (failed and successful)",
+                "Details on Multi-Factor Authentication (MFA) status and whether it was bypassed or used",
+                "Specific resources/systems the compromised account has access to",
+                "Current status of the account (e.g., disabled, password reset, sessions revoked)",
+                "Impact or scope of previous 'Credential Compromise' incidents",
+                "Any relevant internal or external threat intelligence regarding current attack campaigns"
+            ],
+            "opportunities": [
+                "Enhance automated response for suspicious login patterns (e.g., automatic account lockout, temporary MFA requirement for unusual logins)",
+                "Strengthen MFA enforcement and consider phishing-resistant MFA solutions",
+                "Improve user awareness training regarding credential stuffing, phishing, and strong password practices",
+                "Conduct proactive threat hunting for similar login patterns across other accounts or potential lateral movement from this incident",
+                "Review and optimize audit logging for clarity and real-time alerting on critical security events",
+                "Evaluate access control policies to ensure least privilege is applied to all accounts"
+            ],
+            "risks": [
+                "**Account Compromise:** High likelihood of actual account compromise due to successful login after numerous failed attempts.",
+                "**Unauthorized Access:** Potential for an attacker to gain unauthorized access to internal systems, applications, and sensitive data.",
+                "**Data Breach/Exfiltration:** Risk of sensitive information being accessed, modified, or exfiltrated, depending on the compromised account's privileges.",
+                "**Lateral Movement:** The compromised account could serve as a pivot point for an attacker to escalate privileges or move laterally within the network to access other critical assets.",
+                "**Operational Disruption:** Malicious actions taken by an attacker using the compromised account could disrupt business operations.",
+                "**Reputation Damage:** A successful attack leading to a data breach or prolonged system disruption can severely damage the organization's reputation.",
+                "**Financial Loss:** Potential costs associated with incident response, forensics, legal fees, regulatory fines, and lost business.",
+                "**Compliance Violations:** Failure to protect account credentials and data could lead to non-compliance with industry regulations and legal requirements."
+            ]
+        },
+        "recommendation": {
+            "recommended_action": "Immediately disable the compromised account and revoke all active sessions for that account.",
+            "action_priority": "Critical",
+            "business_impact": "Disabling the account will prevent further unauthorized access and potential data exfiltration or system manipulation, mitigating immediate financial, reputational, and operational risks. There will be a temporary disruption for the legitimate user of the account, which should be managed with clear communication.",
+            "reasoning": [
+                "The incident summary indicates a high probability of account compromise due to 15 failed login attempts immediately followed by a successful login, strongly suggesting a credential stuffing or brute-force attack.",
+                "The risk assessment identifies this as a High-risk incident (score 85) with a high likelihood of account compromise, unauthorized access, and potential data breach/exfiltration.",
+                "Organizational policy ('Failed login attempts exceeding 10 must trigger an investigation') has been triggered, demanding immediate action beyond just investigation.",
+                "Immediate containment is paramount to prevent lateral movement, privilege escalation, or further malicious activity by an attacker who has successfully gained access.",
+                "Revoking sessions ensures that any active, potentially malicious, sessions are terminated instantly, providing immediate control over the compromised entity."
+            ],
+            "supporting_evidence": [
+                "15 consecutive failed login attempts immediately followed by a successful login.",
+                "Incident Type: Suspicious Login Activity / Potential Account Compromise, Severity: High.",
+                "Risk: High likelihood of actual account compromise, unauthorized access, data breach/exfiltration, lateral movement, operational disruption.",
+                "Organizational policy triggered: 'Failed login attempts exceeding 10 must trigger an investigation'."
+            ],
+            "confidence": 90,
+            "alternative_actions": [
+                "Force an immediate password reset for the account and require MFA re-enrollment, then monitor all new sessions closely.",
+                "Isolate any known endpoints associated with the user and initiate a forensic investigation of those devices.",
+                "Temporarily suspend all non-essential access for the account while performing a deeper investigation into login origins and activities."
+            ],
+            "follow_up_actions": [
+                "**Conduct a comprehensive forensic investigation:** Determine the scope of compromise (what was accessed, modified, or exfiltrated), identify the source IP address(es) of the successful login, geographical location, and method of attack (e.g., credential stuffing, phishing).",
+                "**Reset account password and enforce MFA re-enrollment:** Once the account is secured and the immediate threat contained, reset the password and require the legitimate user to re-enroll in MFA, ideally with a phishing-resistant method.",
+                "**Notify and interview the legitimate account owner:** Gather information regarding recent activities, potential phishing attempts, or unusual behavior noticed by the user.",
+                "**Review access logs and activity of the compromised account:** Analyze logs for any immediate actions taken by the attacker post-login (e.g., privilege escalation, new account creation, data access attempts, VPN connections).",
+                "**Perform proactive threat hunting:** Search for similar login patterns or indicators of compromise across other accounts and systems within the organization, especially for lateral movement.",
+                "**Enhance automated response:** Implement and refine automated responses for suspicious login patterns, such as automatic account lockout after a configurable number of failed attempts, or temporary MFA requirements for logins from unusual locations/devices.",
+                "**Evaluate and strengthen MFA enforcement:** Review the existing MFA solution and consider adopting stronger, phishing-resistant MFA options where appropriate.",
+                "**Update user awareness training:** Reinforce education on strong password practices, identifying phishing attempts, and reporting suspicious activities."
+            ]
+        },
+        "approval": {
+            "approved": true,
+            "approved_by": "Security Analyst",
+            "reviewer_comments": null,
+            "approval_timestamp": "2026-06-27T15:05:44.712966",
+            "execution_status": "Approved"
+        }
     }
 ]
