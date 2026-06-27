@@ -3,7 +3,7 @@ from planner.state import AgentState
 from planner.models.incident import IncidentInfo
 
 
-def analyze_incident(data: dict):
+def run_ai_analysis(data: dict):
 
     state = AgentState(
 
