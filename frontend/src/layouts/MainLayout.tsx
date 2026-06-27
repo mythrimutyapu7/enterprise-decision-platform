@@ -1,8 +1,16 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import { useEffect } from 'react';
+import { setNavigationHandler } from '../services/api';
 import Sidebar from "../components/layout/Sidebar";
 import Navbar from "../components/layout/Navbar";
 
 export default function MainLayout() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setNavigationHandler(navigate);
+  }, [navigate]);
+
   return (
     <div className="min-h-screen bg-[#0B1120] text-white">
 

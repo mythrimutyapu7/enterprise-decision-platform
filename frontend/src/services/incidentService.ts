@@ -69,14 +69,14 @@ export const fetchIncidentById = async (id: string): Promise<IncidentDetail> => 
 };
 
 export const createIncident = async (payload: CreateIncidentRequest) => {
-  const response = await api.post<IncidentDetail>('/incidents/', {
+  const response = await api.post('/incidents/', {
     title: payload.title,
     description: payload.description,
     severity: payload.severity,
     status: payload.status,
     created_by: payload.createdBy,
   });
-  return response.data as AnalysisResponse;
+  return response.data;
 };
 
 export const deleteIncident = async (id: string) => {
@@ -87,7 +87,16 @@ export const deleteIncident = async (id: string) => {
 export const analyzeIncident = async (id: string): Promise<any> => {
   const response = await api.post(`/incidents/${id}/analyze`);
 
-  const result = response.data.analysis;
+  if (!response.data) {
+    throw new Error('No response from analysis endpoint');
+  }
+
+  if (response.data.success === false) {
+    const err = response.data.error || 'Analysis failed';
+    throw new Error(err);
+  }
+
+  const result = response.data.analysis || response.data;
 
   return {
     incident: result.incident,
