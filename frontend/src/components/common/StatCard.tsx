@@ -1,62 +1,122 @@
-import { ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { ReactNode } from "react";
+import { motion } from "framer-motion";
 
 interface StatCardProps {
   title: string;
   value: string | number;
   icon: ReactNode;
-  accent?: 'primary' | 'success' | 'warning' | 'critical';
+  accent?: "primary" | "success" | "warning" | "critical";
   trend?: number[];
 }
 
-const accentClasses: Record<NonNullable<StatCardProps['accent']>, string> = {
-  primary: 'from-[#4f8cff] to-[#7c5cff] text-white shadow-[0_22px_70px_rgba(79,140,255,0.28)]',
-  success: 'from-[#22c55e] to-[#4ade80] text-white shadow-[0_22px_70px_rgba(34,197,94,0.18)]',
-  warning: 'from-[#f59e0b] to-[#f97316] text-white shadow-[0_22px_70px_rgba(245,158,11,0.18)]',
-  critical: 'from-[#ef4444] to-[#f97316] text-white shadow-[0_22px_70px_rgba(239,68,68,0.2)]',
+const colors = {
+  primary: {
+    icon: "from-blue-500 to-indigo-600",
+    border: "border-blue-500/30",
+    glow: "shadow-blue-500/20",
+    line: "from-blue-500 to-indigo-500",
+  },
+  success: {
+    icon: "from-emerald-500 to-green-500",
+    border: "border-emerald-500/30",
+    glow: "shadow-emerald-500/20",
+    line: "from-emerald-500 to-green-500",
+  },
+  warning: {
+    icon: "from-amber-500 to-orange-500",
+    border: "border-amber-500/30",
+    glow: "shadow-amber-500/20",
+    line: "from-amber-500 to-orange-500",
+  },
+  critical: {
+    icon: "from-red-500 to-rose-600",
+    border: "border-red-500/30",
+    glow: "shadow-red-500/20",
+    line: "from-red-500 to-rose-600",
+  },
 };
 
-const progressClasses: Record<NonNullable<StatCardProps['accent']>, string> = {
-  primary: 'from-[#4f8cff] to-[#7c5cff]',
-  success: 'from-[#22c55e] to-[#86efac]',
-  warning: 'from-[#f59e0b] to-[#f97316]',
-  critical: 'from-[#ef4444] to-[#f59e0b]',
-};
-
-const StatCard = ({ title, value, icon, accent = 'primary', trend = [] }: StatCardProps) => {
-  const bars = trend.length > 0 ? trend : [0];
-  const maxValue = Math.max(...bars, 1);
+export default function StatCard({
+  title,
+  value,
+  icon,
+  accent = "primary",
+  trend = [],
+}: StatCardProps) {
+  const max = Math.max(...trend, 1);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 18, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      whileHover={{ y: -6, scale: 1.02 }}
-      transition={{ duration: 0.35, ease: 'easeOut' }}
-      className="glass-card group overflow-hidden p-6"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.3 }}
+      className={`
+      relative
+      overflow-hidden
+      rounded-2xl
+      border
+      ${colors[accent].border}
+      bg-[#121826]
+      p-6
+      shadow-xl
+      ${colors[accent].glow}
+    `}
     >
-      <div className="absolute right-[-3rem] top-[-3rem] h-32 w-32 rounded-full bg-[#4f8cff]/10 blur-3xl transition duration-300 group-hover:bg-[#7c5cff]/16" />
-      <div className="flex items-start justify-between gap-4">
+      {/* Background Glow */}
+
+      <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/5 blur-3xl" />
+
+      <div className="relative z-10 flex items-start justify-between">
         <div>
-          <p className="eyebrow">{title}</p>
-          <p className="mt-4 text-[42px] font-bold leading-none text-white">{value}</p>
-          <p className="mt-3 text-sm text-slate-400">Real-time operational signal</p>
+          <p className="text-xs uppercase tracking-[0.22em] text-slate-400">
+            {title}
+          </p>
+
+          <h2 className="mt-3 text-4xl font-bold text-white">{value}</h2>
+
+          <p className="mt-2 text-sm text-slate-500">
+            Updated in real time
+          </p>
         </div>
-        <div className={`inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${accentClasses[accent]}`}>
+
+        <div
+          className={`
+          flex
+          h-14
+          w-14
+          items-center
+          justify-center
+          rounded-xl
+          bg-gradient-to-br
+          ${colors[accent].icon}
+          text-white
+          shadow-lg
+        `}
+        >
           {icon}
         </div>
       </div>
-      <div className="mt-6 flex h-10 items-end gap-1.5">
-        {bars.map((count, index) => (
-          <span
-            key={index}
-            className={`flex-1 rounded-full bg-gradient-to-t ${progressClasses[accent]}`}
-            style={{ height: `${Math.max((count / maxValue) * 100, count > 0 ? 18 : 8)}%`, opacity: count > 0 ? 0.88 : 0.28 }}
+
+      {/* Trend */}
+
+      <div className="mt-8 flex h-12 items-end gap-1">
+        {(trend.length ? trend : [0]).map((v, i) => (
+          <div
+            key={i}
+            className={`
+              flex-1
+              rounded-full
+              bg-gradient-to-t
+              ${colors[accent].line}
+            `}
+            style={{
+              height: `${Math.max((v / max) * 100, v ? 18 : 8)}%`,
+              opacity: v ? 1 : 0.25,
+            }}
           />
         ))}
       </div>
     </motion.div>
   );
-};
-
-export default StatCard;
+}
