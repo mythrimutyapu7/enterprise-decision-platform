@@ -1,0 +1,21 @@
+Incident 1
+
+Credential compromise
+
+Resolved by password reset
+
+----------------------------------
+
+Incident 2
+
+VPN login from Russia
+
+False Positive
+
+----------------------------------
+
+Incident 3
+
+Impossible Travel
+
+Account Disabled

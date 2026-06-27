@@ -1,0 +1,227 @@
+[
+    {
+        "incident": {
+            "incident_id": 1,
+            "summary": "Multiple failed login attempts to an account, immediately followed by a successful login.",
+            "incident_type": "Brute Force / Unauthorized Access",
+            "title": "Suspicious Login",
+            "description": "15 failed logins followed by successful login.",
+            "key_findings": [],
+            "severity": "High",
+            "source": "Microsoft Sentinel",
+            "uploaded_file": null,
+            "created_by": null
+        },
+        "context": {
+            "security_policies": [
+                "Failed login attempts exceeding 10 must trigger an investigation.",
+                "All privileged users must authenticate using Multi-Factor Authentication.",
+                "Disable accounts after confirmed compromise."
+            ],
+            "incident_playbooks": [
+                "Reset Password",
+                "Disable Account",
+                "Revoke Active Sessions",
+                "Verify MFA",
+                "Notify SOC",
+                "Review Audit Logs",
+                "Close Incident"
+            ],
+            "threat_intelligence": [],
+            "affected_assets": [],
+            "organizational_notes": [
+                "Credential compromise",
+                "Resolved by password reset",
+                "Account Disabled"
+            ]
+        },
+        "analysis": {
+            "risk_level": "High",
+            "risk_score": 85,
+            "confidence": 95,
+            "indicators": [
+                "Multiple failed login attempts",
+                "Successful login immediately following failed attempts",
+                "Incident Type: Brute Force / Unauthorized Access",
+                "Organizational Notes confirm 'Credential compromise'"
+            ],
+            "missing_information": [
+                "Was the compromised account a privileged user?",
+                "If privileged, was MFA enabled? If yes, how was it bypassed? If no, why was it not enforced?",
+                "Exact number of failed login attempts (to verify 'exceeding 10' policy trigger)",
+                "Scope of access/impact post-successful login (what systems/data were accessed)?",
+                "IP address/geographic location of the successful login",
+                "Root cause of the credential compromise (e.g., phishing, password spray, dark web leak)",
+                "Whether any threat intelligence related to this specific attack vector or actor exists"
+            ],
+            "opportunities": [
+                "Enhance MFA enforcement and coverage, especially for non-privileged accounts if applicable.",
+                "Review and optimize brute-force detection and prevention mechanisms (e.g., rate limiting, IP blocking).",
+                "Conduct a thorough post-incident forensic analysis to identify the root cause of the credential compromise.",
+                "Improve logging and alerting for suspicious login patterns and investigate all 'exceeding 10' failed login events.",
+                "Strengthen user awareness training regarding password hygiene and phishing attacks.",
+                "Evaluate privileged access management (PAM) controls if the compromised account was privileged."
+            ],
+            "risks": [
+                "Unauthorized access to internal systems and potentially sensitive data.",
+                "Potential for lateral movement and privilege escalation by the attacker.",
+                "Data exfiltration or integrity compromise leading to business disruption or regulatory fines.",
+                "Reputational damage due to a security breach.",
+                "Ongoing vulnerability if the root cause of the credential compromise is not identified and remediated.",
+                "Policy violation if a privileged account lacked MFA, or if the investigation was not triggered per policy."
+            ]
+        },
+        "recommendation": {
+            "recommended_action": "Immediately disable the compromised user account, revoke all active sessions, force a password reset, and initiate an emergency incident response investigation to contain the breach and determine its scope.",
+            "action_priority": "Critical",
+            "business_impact": "High - Potential for immediate data exfiltration, lateral movement, privilege escalation, system compromise, significant financial loss, and severe reputational damage if the attacker retains access.",
+            "reasoning": [
+                "Successful unauthorized access has been confirmed, indicating an active or very recent breach.",
+                "Immediate containment is paramount to prevent further attacker actions, lateral movement, and potential data exfiltration or system damage.",
+                "Disabling the account and revoking sessions severs the attacker's current access, stopping the active threat.",
+                "A full incident response investigation is required to determine the full scope of the breach, identify affected assets, understand the attack vector, and remediate root causes effectively."
+            ],
+            "supporting_evidence": [
+                "The incident summary states 'Successful login immediately following failed attempts,' directly confirming unauthorized access.",
+                "The 'Risk Level' is 'High' (Score 85), emphasizing the severity and urgency of the situation.",
+                "Indicators include 'Incident Type: Brute Force / Unauthorized Access' and 'Organizational Notes confirm 'Credential compromise',' leaving no doubt of a breach.",
+                "The listed risks, such as 'Unauthorized access to internal systems and potentially sensitive data' and 'Potential for lateral movement and privilege escalation,' highlight the critical need for immediate containment."
+            ],
+            "confidence": 5,
+            "alternative_actions": [
+                "Monitor the compromised account for suspicious activity: This is too reactive and carries an unacceptable risk of allowing further damage during monitoring, violating the principle of immediate containment.",
+                "Only force a password reset without immediate disablement: An attacker could still be active in a current session before the reset takes effect, or bypass it if the underlying compromise method is still active.",
+                "Rely solely on automated lockout mechanisms: These may not be configured to act fast enough after a successful login or prevent a single, critical successful login, which has already occurred."
+            ],
+            "follow_up_actions": [
+                "Conduct a comprehensive forensic analysis of the compromised account and all accessed systems to determine the full scope of the breach, including lateral movement, data accessed/exfiltrated, and duration of access.",
+                "Review and strengthen Multi-Factor Authentication (MFA) enforcement, particularly for privileged accounts, and investigate any MFA bypass mechanisms if MFA was enabled.",
+                "Identify and remediate the root cause of the credential compromise (e.g., phishing campaign, dark web leak, unpatched vulnerability, insider threat).",
+                "Enhance logging, alerting, and automated response capabilities for suspicious login patterns, brute-force attempts, and successful logins from unusual locations/IPs.",
+                "Implement or strengthen Privileged Access Management (PAM) controls and review associated policies if the compromised account was privileged.",
+                "Update user awareness training focusing on password hygiene, phishing detection, and the importance of reporting suspicious activities."
+            ]
+        },
+        "approval": {
+            "approved": true,
+            "approved_by": "Security Analyst",
+            "reviewer_comments": null,
+            "approval_timestamp": "2026-06-27T12:06:20.519863",
+            "execution_status": "Approved"
+        }
+    },
+    {
+        "incident": {
+            "incident_id": 1,
+            "summary": "An account experienced multiple failed login attempts followed by a successful login, indicating a potential brute-force attack or credential stuffing attempt.",
+            "incident_type": "Unauthorized Access Attempt",
+            "title": "Suspicious Login",
+            "description": "15 failed logins followed by successful login.",
+            "key_findings": [],
+            "severity": "Medium",
+            "source": "Microsoft Sentinel",
+            "uploaded_file": null,
+            "created_by": null
+        },
+        "context": {
+            "security_policies": [
+                "Failed login attempts exceeding 10 must trigger an investigation."
+            ],
+            "incident_playbooks": [
+                "Reset Password",
+                "Disable Account",
+                "Revoke Active Sessions",
+                "Verify MFA",
+                "Notify SOC",
+                "Review Audit Logs",
+                "Close Incident"
+            ],
+            "threat_intelligence": [],
+            "affected_assets": [],
+            "organizational_notes": [
+                "Credential compromise - Resolved by password reset"
+            ]
+        },
+        "analysis": {
+            "risk_level": "Medium",
+            "risk_score": 55,
+            "confidence": 60,
+            "indicators": [
+                "Multiple failed login attempts",
+                "Subsequent successful login",
+                "Incident Type: Unauthorized Access Attempt",
+                "Organizational note: 'Credential compromise'",
+                "Organizational note: 'Resolved by password reset'"
+            ],
+            "missing_information": [
+                "Exact number of failed login attempts before success",
+                "Details of the successful login (source IP, geographic location, device type)",
+                "Identity and role of the compromised account (e.g., privileged user)",
+                "Was Multi-Factor Authentication (MFA) enabled and/or bypassed?",
+                "Actions taken by the attacker during the period of unauthorized access (e.g., data access, lateral movement, persistence establishment)",
+                "Root cause of the credential compromise (e.g., phishing, credential stuffing, malware, weak password)",
+                "Scope and depth of the investigation performed beyond the password reset (e.g., review of all audit logs, endpoint analysis)",
+                "Confirmation that 'Revoke Active Sessions' was executed as per playbook",
+                "Specific timeline of the compromise and resolution"
+            ],
+            "opportunities": [
+                "Implement or strengthen Multi-Factor Authentication (MFA) for all users, especially privileged accounts.",
+                "Enhance logging and alerting capabilities to detect impossible travel, new device logins, and other anomalous login patterns more effectively.",
+                "Conduct user awareness training on phishing, password hygiene, and social engineering threats.",
+                "Implement automated controls to prevent or mitigate credential stuffing and brute-force attacks (e.g., CAPTCHA, adaptive authentication, IP rate limiting).",
+                "Perform a comprehensive post-incident review to identify and address systemic weaknesses in identity and access management.",
+                "Proactively threat hunt for persistence mechanisms or further compromise attempts across the environment based on this incident."
+            ],
+            "risks": [
+                "**Initial Account Compromise:** The credentials for an account were successfully exploited, indicating a vulnerability in authentication controls.",
+                "**Undetected Attacker Actions:** Potential for data exfiltration, lateral movement, or establishment of persistence during the compromise window if the full scope of activity was not investigated and remediated.",
+                "**Recurrence of Attack:** If the root cause of the credential compromise (e.g., phishing, weak password, lack of MFA) is not fully identified and addressed, similar incidents are likely to occur again.",
+                "**Insufficient Remediation:** If the password reset was the sole remediation and other attacker artifacts (e.g., active sessions, unauthorized MFA devices, mail forwarding rules) were not cleaned up, the account could still be at risk.",
+                "**Reputational Damage & Regulatory Fines:** If sensitive data was accessed or exfiltrated, it could lead to a data breach, resulting in reputational harm and potential regulatory penalties."
+            ]
+        },
+        "recommendation": {
+            "recommended_action": "Initiate a comprehensive incident response investigation for the compromised account, focusing on detailed forensic analysis, root cause identification, and verification of complete remediation beyond the initial password reset.",
+            "action_priority": "High",
+            "business_impact": "Potentially severe. Uninvestigated access could lead to undetected data exfiltration, lateral movement, establishment of persistence, regulatory fines, and significant reputational damage. A thorough investigation minimizes these risks and prevents recurrence.",
+            "reasoning": [
+                "The 'password reset' as the sole remediation is likely insufficient given the successful login and unknown attacker actions.",
+                "Critical information about the successful login (source IP, geographic location, device type) and the identity/role of the compromised account is missing, hindering a full risk assessment.",
+                "The actions taken by the attacker during the period of unauthorized access are unknown, making it impossible to ascertain the true impact or extent of compromise (e.g., data exfiltration, lateral movement, persistence).",
+                "The root cause of the credential compromise is unknown, increasing the likelihood of recurrence if underlying vulnerabilities (e.g., phishing, weak password, lack of MFA) are not addressed.",
+                "There is no confirmation that 'Revoke Active Sessions' was executed or that other attacker artifacts (e.g., unauthorized MFA devices, mail forwarding rules) have been cleaned up, indicating potential ongoing risk."
+            ],
+            "supporting_evidence": [
+                "Incident Summary: 'Multiple failed login attempts followed by a successful login, indicating a potential brute-force attack or credential stuffing attempt.'",
+                "Risk: 'Initial Account Compromise: The credentials for an account were successfully exploited.'",
+                "Risk: 'Undetected Attacker Actions: Potential for data exfiltration, lateral movement, or establishment of persistence during the compromise window if the full scope of activity was not investigated and remediated.'",
+                "Risk: 'Insufficient Remediation: If the password reset was the sole remediation and other attacker artifacts [...] were not cleaned up, the account could still be at risk.'",
+                "Missing Information: 'Actions taken by the attacker during the period of unauthorized access (e.g., data access, lateral movement, persistence establishment)'",
+                "Missing Information: 'Root cause of the credential compromise (e.g., phishing, credential stuffing, malware, weak password)'",
+                "Missing Information: 'Scope and depth of the investigation performed beyond the password reset (e.g., review of all audit logs, endpoint analysis)'",
+                "Missing Information: 'Confirmation that 'Revoke Active Sessions' was executed as per playbook'"
+            ],
+            "confidence": 0.95,
+            "alternative_actions": [
+                "Immediately force password resets for all users (overkill, does not address root cause or attacker actions in this specific incident).",
+                "Implement or strengthen Multi-Factor Authentication (MFA) for all users (good long-term action, but does not address the current incident's scope or potential ongoing compromise).",
+                "Close the incident as resolved based solely on the password reset (high risk, ignores critical missing information and potential for further compromise)."
+            ],
+            "follow_up_actions": [
+                "Upon completion of the investigation, conduct a comprehensive post-incident review to identify and address systemic weaknesses in identity and access management.",
+                "Implement or strengthen Multi-Factor Authentication (MFA) for all users, especially privileged accounts, across the organization.",
+                "Enhance logging and alerting capabilities to detect impossible travel, new device logins, and other anomalous login patterns more effectively.",
+                "Conduct user awareness training on phishing, password hygiene, and social engineering threats.",
+                "Implement automated controls to prevent or mitigate credential stuffing and brute-force attacks (e.g., CAPTCHA, adaptive authentication, IP rate limiting).",
+                "Proactively threat hunt for persistence mechanisms or further compromise attempts across the environment based on lessons learned from this incident."
+            ]
+        },
+        "approval": {
+            "approved": true,
+            "approved_by": "Security Analyst",
+            "reviewer_comments": null,
+            "approval_timestamp": "2026-06-27T12:07:27.563118",
+            "execution_status": "Approved"
+        }
+    }
+]
