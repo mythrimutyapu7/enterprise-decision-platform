@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from services.analysis_service import analyze_incident
+from backend.services.analysis_service import analyze_incident
 
 router = APIRouter(
     prefix="/incidents",

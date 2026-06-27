@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from schemas.user_schema import UserCreate, UserLogin
-from services.auth_service import register_user, login_user
+from backend.schemas.user_schema import UserCreate, UserLogin
+from backend.services.auth_service import register_user, login_user
 
 router = APIRouter(
     prefix="/auth",

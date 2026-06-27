@@ -1,10 +1,10 @@
 from fastapi import FastAPI
-from database.mongodb import database
-from api.auth import router as auth_router
-from api.incidents import router as incident_router
-from api.upload import router as upload_router
-from api.analysis import router as analysis_router
-from api.recommendations import router as recommendation_router
+from backend.database.mongodb import database
+from backend.api.auth import router as auth_router
+from backend.api.incidents import router as incident_router
+from backend.api.upload import router as upload_router
+from backend.api.analysis import router as analysis_router
+from backend.api.recommendations import router as recommendation_router
 
 
 app = FastAPI(
