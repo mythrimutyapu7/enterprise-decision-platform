@@ -1,4 +1,5 @@
 from database.mongodb import database
+from utils.security import hash_password, verify_password
 
 # MongoDB Collection
 users_collection = database["users"]
@@ -21,10 +22,11 @@ async def register_user(user):
             }
 
         # Create user document
+        hashed_password = hash_password(user.password)
         user_data = {
             "name": user.name,
             "email": user.email,
-            "password": user.password,   # We'll hash this later
+            "password": hashed_password,
             "role": user.role
         }
 
@@ -61,7 +63,10 @@ async def login_user(user):
             }
 
         # Check password
-        if existing_user["password"] != user.password:
+        if not verify_password(
+            user.password,
+            existing_user["password"]
+        ):
             return {
                 "success": False,
                 "message": "Invalid password"
