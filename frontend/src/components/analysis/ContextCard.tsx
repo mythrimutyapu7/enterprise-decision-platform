@@ -3,7 +3,8 @@ import {
   FiBookOpen,
   FiClipboard,
   FiShield,
-  FiClock,
+  FiGlobe,
+  FiCheckCircle,
 } from "react-icons/fi";
 
 interface Props {
@@ -11,44 +12,67 @@ interface Props {
 }
 
 interface SectionProps {
-  icon: React.ReactNode;
   title: string;
+  icon: React.ReactNode;
   items: string[];
 }
 
-function Section({ icon, title, items }: SectionProps) {
+function Section({ title, icon, items }: SectionProps) {
   return (
-    <div className="rounded-2xl border border-slate-700 bg-slate-900 p-5">
+    <div className="premium-panel">
+
       <div className="mb-5 flex items-center gap-3">
-        <div className="rounded-lg bg-blue-500/15 p-2 text-blue-400">
+
+        <div className="rounded-xl bg-blue-500/15 p-3 text-blue-400">
           {icon}
         </div>
 
-        <h3 className="font-semibold text-white">
+        <h3 className="text-lg font-semibold text-white">
           {title}
         </h3>
+
       </div>
 
-      {items && items.length > 0 ? (
+      {items?.length ? (
+
         <div className="space-y-3">
 
-          {items.map((item, index) => (
-            <div
+          {items.map((item: string, index: number) => (
+
+            <motion.div
               key={index}
-              className="rounded-xl border border-slate-700 bg-[#121826] p-3"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="rounded-xl border border-slate-700 bg-[#121826] p-4"
             >
-              <p className="text-sm leading-6 text-slate-300">
-                {item}
-              </p>
-            </div>
+
+              <div className="flex items-start gap-3">
+
+                <FiCheckCircle className="mt-1 text-blue-400" />
+
+                <p className="leading-7 text-slate-300">
+                  {item}
+                </p>
+
+              </div>
+
+            </motion.div>
+
           ))}
 
         </div>
+
       ) : (
+
         <div className="rounded-xl border border-dashed border-slate-700 p-6 text-center text-slate-500">
-          No information available.
+
+          No information available
+
         </div>
+
       )}
+
     </div>
   );
 }
@@ -56,51 +80,58 @@ function Section({ icon, title, items }: SectionProps) {
 export default function ContextCard({ context }: Props) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-3xl border border-slate-700 bg-[#121826] p-8 shadow-xl"
+      transition={{ duration: 0.4 }}
+      className="glass-card p-8"
     >
+
       <div className="mb-8">
-        <p className="text-xs uppercase tracking-[0.35em] text-blue-400">
-          SECURITY CONTEXT
+
+        <p className="eyebrow">
+          ENTERPRISE CONTEXT
         </p>
 
-        <h2 className="mt-2 text-2xl font-bold text-white">
-          Enterprise Knowledge Base
+        <h2 className="mt-2 text-3xl font-bold text-white">
+          AI Knowledge Base
         </h2>
 
-        <p className="mt-2 text-slate-400">
-          Context collected by the AI agents before generating recommendations.
+        <p className="mt-3 max-w-3xl leading-7 text-slate-400">
+          Before generating a recommendation, the AI retrieved internal
+          organizational knowledge, security policies, playbooks, historical
+          incidents, and threat intelligence to improve decision quality.
         </p>
+
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-2">
 
         <Section
           title="Security Policies"
-          icon={<FiShield size={18} />}
+          icon={<FiShield size={20} />}
           items={context.security_policies || []}
         />
 
         <Section
           title="Incident Playbooks"
-          icon={<FiBookOpen size={18} />}
+          icon={<FiBookOpen size={20} />}
           items={context.incident_playbooks || []}
         />
 
         <Section
           title="Organizational Notes"
-          icon={<FiClipboard size={18} />}
+          icon={<FiClipboard size={20} />}
           items={context.organizational_notes || []}
         />
 
         <Section
           title="Threat Intelligence"
-          icon={<FiClock size={18} />}
+          icon={<FiGlobe size={20} />}
           items={context.threat_intelligence || []}
         />
 
       </div>
+
     </motion.div>
   );
 }

@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
 import {
-  FiCheckCircle,
-  FiAlertTriangle,
   FiShield,
-  FiArrowRight,
+  FiCheckCircle,
   FiActivity,
+  FiArrowRight,
   FiLayers,
+  FiAlertTriangle,
+  FiZap,
 } from "react-icons/fi";
 
 interface Props {
@@ -16,18 +17,18 @@ interface ListProps {
   title: string;
   icon: React.ReactNode;
   items: string[];
-  color?: string;
+  border?: string;
 }
 
-function ListSection({
+function Section({
   title,
   icon,
   items,
-  color = "border-slate-700",
+  border = "border-slate-700",
 }: ListProps) {
   return (
-    <div className={`rounded-2xl border ${color} bg-slate-900 p-5`}>
-      <div className="mb-4 flex items-center gap-3">
+    <div className={`rounded-2xl border ${border} bg-slate-900 p-5`}>
+      <div className="mb-5 flex items-center gap-3">
         <div className="rounded-lg bg-blue-500/15 p-2 text-blue-400">
           {icon}
         </div>
@@ -39,20 +40,26 @@ function ListSection({
 
       {items?.length ? (
         <div className="space-y-3">
-          {items.map((item, index) => (
-            <div
+          {items.map((item: string, index: number) => (
+            <motion.div
               key={index}
-              className="rounded-xl border border-slate-700 bg-[#121826] p-3"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="rounded-xl border border-slate-700 bg-[#121826] p-4"
             >
-              <p className="text-sm leading-6 text-slate-300">
-                {item}
-              </p>
-            </div>
+              <div className="flex gap-3">
+                <FiCheckCircle className="mt-1 text-green-400" />
+                <p className="leading-7 text-slate-300">
+                  {item}
+                </p>
+              </div>
+            </motion.div>
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-slate-700 p-6 text-center text-slate-500">
-          No information available.
+        <div className="rounded-xl border border-dashed border-slate-700 p-5 text-center text-slate-500">
+          No information available
         </div>
       )}
     </div>
@@ -64,70 +71,76 @@ export default function RecommendationCard({
 }: Props) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-3xl border border-slate-700 bg-[#121826] p-8 shadow-xl"
+      className="glass-card p-8"
     >
       <div className="mb-8">
 
-        <p className="text-xs uppercase tracking-[0.35em] text-blue-400">
+        <p className="eyebrow">
           AI RECOMMENDATION
         </p>
 
-        <h2 className="mt-2 text-2xl font-bold text-white">
-          Recommended Response
+        <h2 className="mt-2 text-3xl font-bold text-white">
+          Executive Decision
         </h2>
 
       </div>
 
-      {/* Main Recommendation */}
+      {/* Main Decision */}
 
-      <div className="rounded-2xl border border-blue-500/30 bg-blue-500/10 p-6">
+      <div className="rounded-3xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 to-violet-500/10 p-7">
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-start gap-5">
 
-          <FiShield
-            size={26}
-            className="text-blue-400"
-          />
+          <div className="rounded-2xl bg-blue-500/15 p-4">
+            <FiShield
+              className="text-blue-400"
+              size={30}
+            />
+          </div>
 
-          <div>
+          <div className="flex-1">
 
-            <p className="text-xs uppercase text-slate-400">
+            <p className="text-xs uppercase tracking-[0.25em] text-slate-400">
               Recommended Action
             </p>
 
-            <h3 className="mt-1 text-xl font-bold text-white">
+            <h2 className="mt-3 text-2xl font-bold text-white">
               {recommendation.recommended_action}
-            </h3>
+            </h2>
 
           </div>
 
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-4">
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
 
-          <div className="rounded-xl bg-slate-900 p-4">
+          <div className="premium-panel">
 
-            <p className="text-xs uppercase text-slate-500">
+            <FiAlertTriangle className="text-orange-400 text-xl"/>
+
+            <p className="mt-3 text-xs uppercase text-slate-500">
               Priority
             </p>
 
-            <h4 className="mt-2 text-lg font-semibold text-red-400">
+            <h3 className="mt-2 text-xl font-bold text-orange-300">
               {recommendation.action_priority}
-            </h4>
+            </h3>
 
           </div>
 
-          <div className="rounded-xl bg-slate-900 p-4">
+          <div className="premium-panel">
 
-            <p className="text-xs uppercase text-slate-500">
-              AI Confidence
+            <FiZap className="text-green-400 text-xl"/>
+
+            <p className="mt-3 text-xs uppercase text-slate-500">
+              Confidence
             </p>
 
-            <h4 className="mt-2 text-lg font-semibold text-green-400">
+            <h3 className="mt-2 text-xl font-bold text-green-300">
               {recommendation.confidence}%
-            </h4>
+            </h3>
 
           </div>
 
@@ -137,11 +150,11 @@ export default function RecommendationCard({
 
       {/* Business Impact */}
 
-      <div className="mt-8 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-5">
+      <div className="mt-8 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-6">
 
-        <div className="mb-3 flex items-center gap-3">
+        <div className="mb-4 flex items-center gap-3">
 
-          <FiAlertTriangle className="text-orange-400" />
+          <FiAlertTriangle className="text-orange-400"/>
 
           <h3 className="font-semibold text-white">
             Business Impact
@@ -149,7 +162,7 @@ export default function RecommendationCard({
 
         </div>
 
-        <p className="leading-7 text-slate-300">
+        <p className="leading-8 text-slate-300">
           {recommendation.business_impact}
         </p>
 
@@ -157,29 +170,29 @@ export default function RecommendationCard({
 
       <div className="mt-8 space-y-6">
 
-        <ListSection
-          title="Reasoning"
+        <Section
+          title="AI Reasoning"
           icon={<FiActivity />}
           items={recommendation.reasoning}
         />
 
-        <ListSection
+        <Section
           title="Supporting Evidence"
           icon={<FiCheckCircle />}
           items={recommendation.supporting_evidence}
         />
 
-        <ListSection
+        <Section
           title="Alternative Actions"
           icon={<FiLayers />}
           items={recommendation.alternative_actions}
         />
 
-        <ListSection
+        <Section
           title="Follow-up Actions"
           icon={<FiArrowRight />}
           items={recommendation.follow_up_actions}
-          color="border-green-500/20"
+          border="border-green-500/20"
         />
 
       </div>
