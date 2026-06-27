@@ -26,3 +26,22 @@ async def create_incident(incident):
             "success": False,
             "error": str(e)
         }
+async def get_all_incidents():
+    try:
+        incidents = []
+
+        async for incident in incidents_collection.find():
+            incident["_id"] = str(incident["_id"])
+            incidents.append(incident)
+
+        return {
+            "success": True,
+            "count": len(incidents),
+            "data": incidents
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
