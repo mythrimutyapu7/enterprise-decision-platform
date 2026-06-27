@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from database.mongodb import database
 from api.auth import router as auth_router
 from api.incidents import router as incident_router
+from api.upload import router as upload_router
 
 app = FastAPI(
     title="Enterprise Decision Platform API",
@@ -10,6 +11,7 @@ app = FastAPI(
 
 app.include_router(auth_router)
 app.include_router(incident_router)
+app.include_router(upload_router)
 
 @app.get("/")
 async def root():
