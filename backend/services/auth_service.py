@@ -2,6 +2,7 @@ from database.mongodb import database
 from utils.security import hash_password, verify_password
 from utils.jwt_handler import create_access_token
 from datetime import datetime
+from fastapi import HTTPException, status
 
 # MongoDB Collection
 users_collection = database["users"]
@@ -18,10 +19,10 @@ async def register_user(user):
         )
 
         if existing_user:
-            return {
-                "success": False,
-                "message": "User already exists"
-            }
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User already exists"
+        )
 
         # Create user document
         hashed_password = hash_password(user.password)
@@ -60,20 +61,20 @@ async def login_user(user):
         )
 
         if not existing_user:
-            return {
-                "success": False,
-                "message": "User not found"
-            }
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+        )
 
         # Check password
         if not verify_password(
             user.password,
             existing_user["password"]
         ):
-            return {
-                "success": False,
-                "message": "Invalid password"
-            }
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid password"
+            )
 
         # Login successful
         token = create_access_token(
@@ -96,8 +97,10 @@ async def login_user(user):
             }
         }
 
+    except HTTPException:
+        raise 
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
