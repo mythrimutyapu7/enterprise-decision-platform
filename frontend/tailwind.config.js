@@ -3,17 +3,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        surface: '#0F172A',
-        card: '#1E293B',
-        primary: '#2563EB',
+        surface: '#050816',
+        card: 'rgba(255,255,255,0.06)',
+        primary: '#4F8CFF',
+        secondary: '#7C5CFF',
         success: '#22C55E',
         warning: '#F59E0B',
         critical: '#EF4444',
         text: '#F8FAFC',
-        muted: '#94A3B8',
+        muted: '#9CA7BA',
       },
       boxShadow: {
-        panel: '0 20px 70px rgba(15, 23, 42, 0.35)',
+        panel: '0 32px 100px rgba(0, 0, 0, 0.38)',
       },
     },
   },

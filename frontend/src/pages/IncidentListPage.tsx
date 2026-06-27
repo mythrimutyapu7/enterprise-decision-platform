@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import { FiChevronRight, FiTrash2, FiEye, FiSearch } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { fetchIncidents, deleteIncident } from '../services/incidentService';
@@ -19,6 +20,13 @@ const statusLabels: Record<IncidentStatus, string> = {
   in_progress: 'In Progress',
   resolved: 'Resolved',
   closed: 'Closed',
+};
+
+const severityStyles: Record<IncidentSeverity, string> = {
+  critical: 'border-critical/30 bg-critical/10 text-red-200 shadow-[0_0_34px_rgba(239,68,68,0.15)]',
+  high: 'border-warning/30 bg-warning/10 text-orange-200 shadow-[0_0_34px_rgba(245,158,11,0.13)]',
+  medium: 'border-primary/30 bg-primary/10 text-blue-200 shadow-[0_0_34px_rgba(79,140,255,0.13)]',
+  low: 'border-success/30 bg-success/10 text-green-200 shadow-[0_0_34px_rgba(34,197,94,0.12)]',
 };
 
 const IncidentListPage = () => {
@@ -65,48 +73,34 @@ const IncidentListPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="space-y-6">
       <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
         <div>
-          <h1 className="text-2xl font-semibold text-text">Incidents</h1>
-          <p className="text-sm text-muted">Review and manage all incident records.</p>
+          <p className="eyebrow">Case Intelligence</p>
+          <h1 className="mt-2 text-3xl font-semibold text-text">Incidents</h1>
+          <p className="mt-1 text-sm text-muted">Review and manage all incident records.</p>
         </div>
-        <button
-          type="button"
-          onClick={() => navigate('/incidents/new')}
-          className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
-        >
+        <button type="button" onClick={() => navigate('/incidents/new')} className="primary-button gap-2 self-start">
           Create Incident
         </button>
       </div>
+
+      {error && <div className="glass-card border-critical/20 p-4 text-sm text-red-200">{error}</div>}
 
       <Card title="Incident Search & Filters">
         <div className="grid gap-4 md:grid-cols-3">
           <div className="relative">
             <FiSearch className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" />
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-[#111827] px-12 py-3 text-sm text-text outline-none focus:border-primary"
-              placeholder="Search incidents..."
-            />
+            <input value={search} onChange={(event) => setSearch(event.target.value)} className="glass-field px-12" placeholder="Search incidents..." />
           </div>
-          <select
-            value={severityFilter}
-            onChange={(event) => setSeverityFilter(event.target.value)}
-            className="rounded-2xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-text outline-none focus:border-primary"
-          >
+          <select value={severityFilter} onChange={(event) => setSeverityFilter(event.target.value)} className="glass-field">
             <option value="all">All Severities</option>
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
             <option value="critical">Critical</option>
           </select>
-          <select
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-            className="rounded-2xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-text outline-none focus:border-primary"
-          >
+          <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className="glass-field">
             <option value="all">All Statuses</option>
             <option value="open">Open</option>
             <option value="in_progress">In Progress</option>
@@ -122,44 +116,45 @@ const IncidentListPage = () => {
         <EmptyState title="No incidents found" description="Try adjusting your search or filters to locate records." />
       ) : (
         <div className="space-y-4">
-          {filteredIncidents.map((incident) => (
-            <div key={incident.id} className="rounded-3xl border border-white/10 bg-card p-5 shadow-panel">
+          {filteredIncidents.map((incident, index) => (
+            <motion.div
+              key={incident.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -4, scale: 1.01 }}
+              transition={{ duration: 0.3, delay: index * 0.03 }}
+              className="glass-card p-5"
+            >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-lg font-semibold text-text">{incident.title}</p>
-                  <p className="mt-1 text-sm text-muted">
-                    {severityLabels[incident.severity]} · {statusLabels[incident.status]} · Created by {incident.createdBy}
-                  </p>
+                <div className="min-w-0">
+                  <div className="mb-3 flex flex-wrap gap-2">
+                    <span className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${severityStyles[incident.severity]}`}>
+                      {severityLabels[incident.severity]}
+                    </span>
+                    <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
+                      {statusLabels[incident.status]}
+                    </span>
+                  </div>
+                  <p className="truncate text-lg font-semibold text-text">{incident.title}</p>
+                  <p className="mt-1 text-sm text-muted">Created by {incident.createdBy}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => navigate(`/incidents/${incident.id}`)}
-                    className="inline-flex items-center gap-2 rounded-2xl bg-[#111827] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/5"
-                  >
+                  <button type="button" onClick={() => navigate(`/incidents/${incident.id}`)} className="glass-button gap-2 px-4 py-3">
                     <FiEye /> View
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(incident.id)}
-                    className="inline-flex items-center gap-2 rounded-2xl bg-critical px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-500"
-                  >
+                  <button type="button" onClick={() => handleDelete(incident.id)} className="glass-button gap-2 border-critical/20 bg-critical/15 px-4 py-3 hover:bg-critical/20">
                     <FiTrash2 /> Delete
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => navigate(`/analysis?id=${incident.id}`)}
-                    className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
-                  >
+                  <button type="button" onClick={() => navigate(`/analysis?id=${incident.id}`)} className="primary-button gap-2 px-4 py-3">
                     Analyze <FiChevronRight />
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

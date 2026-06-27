@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createIncident } from '../services/incidentService';
 import { CreateIncidentRequest, IncidentSeverity, IncidentStatus } from '../types/incident';
@@ -42,10 +43,11 @@ const CreateIncidentPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-text">Create Incident</h1>
-        <p className="text-sm text-muted">Log a new security incident for tracking and analysis.</p>
+        <p className="eyebrow">New Case</p>
+        <h1 className="mt-2 text-3xl font-semibold text-text">Create Incident</h1>
+        <p className="mt-1 text-sm text-muted">Log a new security incident for tracking and analysis.</p>
       </div>
       <Card title="Incident details">
         <form onSubmit={handleSubmit} className="grid gap-5">
@@ -55,7 +57,7 @@ const CreateIncidentPage = () => {
               <input
                 value={form.title}
                 onChange={handleChange('title')}
-                className="w-full rounded-2xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-text outline-none focus:border-primary"
+                className="glass-field"
                 placeholder="Incident title"
               />
             </label>
@@ -64,7 +66,7 @@ const CreateIncidentPage = () => {
               <input
                 value={form.createdBy}
                 onChange={handleChange('createdBy')}
-                className="w-full rounded-2xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-text outline-none focus:border-primary"
+                className="glass-field"
                 placeholder="Reporter name"
               />
             </label>
@@ -75,7 +77,7 @@ const CreateIncidentPage = () => {
               <select
                 value={form.severity}
                 onChange={handleChange('severity')}
-                className="w-full rounded-2xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-text outline-none focus:border-primary"
+                className="glass-field"
               >
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
@@ -88,7 +90,7 @@ const CreateIncidentPage = () => {
               <select
                 value={form.status}
                 onChange={handleChange('status')}
-                className="w-full rounded-2xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-text outline-none focus:border-primary"
+                className="glass-field"
               >
                 <option value="open">Open</option>
                 <option value="in_progress">In Progress</option>
@@ -103,21 +105,21 @@ const CreateIncidentPage = () => {
               value={form.description}
               onChange={handleChange('description')}
               rows={6}
-              className="w-full rounded-3xl border border-white/10 bg-[#111827] px-4 py-3 text-sm text-text outline-none focus:border-primary"
+              className="glass-field min-h-40 rounded-[24px]"
               placeholder="Describe the incident and context."
             />
           </label>
-          {error && <div className="rounded-2xl bg-critical/10 px-4 py-3 text-sm text-critical">{error}</div>}
+          {error && <div className="rounded-[20px] border border-critical/20 bg-critical/10 px-4 py-3 text-sm text-red-200 shadow-[0_0_34px_rgba(239,68,68,0.12)]">{error}</div>}
           <button
             type="submit"
-            className="inline-flex w-full items-center justify-center rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-70"
+            className="primary-button w-full"
             disabled={isLoading}
           >
             {isLoading ? <Loader /> : 'Create Incident'}
           </button>
         </form>
       </Card>
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import { FiMail, FiLock } from 'react-icons/fi';
 import { login } from '../services/authService';
@@ -38,9 +39,12 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-surface px-4 py-10">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-card p-8 shadow-panel">
-        <h1 className="text-2xl font-semibold text-text">Sign in to Enterprise AI</h1>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-surface px-4 py-10">
+      <div className="pointer-events-none absolute left-[-8rem] top-[-8rem] h-96 w-96 rounded-full bg-[#7c5cff]/18 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[-8rem] right-[-8rem] h-96 w-96 rounded-full bg-[#4f8cff]/14 blur-3xl" />
+      <motion.div initial={{ opacity: 0, y: 18, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.45 }} className="glass-card w-full max-w-md p-8">
+        <p className="eyebrow">Secure Access</p>
+        <h1 className="mt-3 text-3xl font-semibold text-text">Sign in to Enterprise AI</h1>
         <p className="mt-2 text-sm text-muted">Enter your credentials to access the incident response platform.</p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
@@ -52,7 +56,7 @@ const LoginPage = () => {
                 type="email"
                 value={form.email}
                 onChange={handleChange('email')}
-                className="w-full rounded-2xl border border-white/10 bg-[#111827] px-12 py-3 text-sm text-text outline-none transition focus:border-primary"
+                className="glass-field px-12"
                 placeholder="email@example.com"
               />
             </div>
@@ -65,15 +69,15 @@ const LoginPage = () => {
                 type="password"
                 value={form.password}
                 onChange={handleChange('password')}
-                className="w-full rounded-2xl border border-white/10 bg-[#111827] px-12 py-3 text-sm text-text outline-none transition focus:border-primary"
+                className="glass-field px-12"
                 placeholder="Enter your password"
               />
             </div>
           </label>
-          {error && <div className="rounded-2xl bg-critical/10 px-4 py-3 text-sm text-critical">{error}</div>}
+          {error && <div className="rounded-[20px] border border-critical/20 bg-critical/10 px-4 py-3 text-sm text-red-200">{error}</div>}
           <button
             type="submit"
-            className="flex w-full items-center justify-center rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-70"
+            className="primary-button w-full"
             disabled={isLoading}
           >
             {isLoading ? <Loader /> : 'Sign In'}
@@ -86,7 +90,7 @@ const LoginPage = () => {
             Create an account
           </Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 };

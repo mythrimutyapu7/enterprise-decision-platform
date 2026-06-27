@@ -1,21 +1,61 @@
-import { FiBell, FiSearch } from 'react-icons/fi';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { FiBell, FiSearch, FiCommand, FiCircle } from 'react-icons/fi';
 
 const Navbar = () => {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setTime(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
   return (
-    <header className="flex items-center justify-between border-b border-white/10 bg-[#111827] px-6 py-4 shadow-sm">
-      <div>
-        <h2 className="text-lg font-semibold text-text">Welcome back</h2>
-        <p className="text-sm text-muted">Review the latest incident intelligence.</p>
+    <motion.header
+      initial={{ opacity: 0, y: -14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="glass-card sticky top-3 z-20 mb-6 px-4 py-4 shadow-[0_38px_90px_rgba(0,0,0,0.24)] sm:px-5"
+    >
+      <div className="flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
+        <div className="min-w-0">
+          <p className="eyebrow">Command Center</p>
+          <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">AI SOC Operations</h2>
+          <p className="mt-1 text-sm leading-6 text-slate-300">Live status, agent telemetry, and intelligent incident controls.</p>
+        </div>
+
+        <div className="grid min-w-0 gap-3 sm:flex sm:items-center">
+          <div className="glass-input flex min-w-0 items-center gap-3 sm:w-72">
+            <FiSearch className="h-4 w-4 text-slate-300" />
+            <input className="w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-500" placeholder="Search commands" />
+          </div>
+          <div className="glass-pill justify-between text-white/80 sm:justify-start">
+            AI Status
+            <span className="inline-flex items-center gap-2 normal-case tracking-normal">
+              <FiCircle className="h-2.5 w-2.5 fill-green-400 text-green-400 drop-shadow-[0_0_10px_rgba(34,197,94,0.9)]" />
+              Active
+            </span>
+          </div>
+        </div>
       </div>
-      <div className="flex items-center gap-4">
-        <button className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#1f2937] text-muted transition hover:bg-[#374151]">
-          <FiSearch className="h-5 w-5" />
-        </button>
-        <button className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#1f2937] text-muted transition hover:bg-[#374151]">
-          <FiBell className="h-5 w-5" />
-        </button>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-4 text-sm text-slate-400">
+        <div className="flex items-center gap-3">
+          <button className="glass-button h-11 w-11 p-0 text-white" title="Command palette">
+            <FiCommand className="h-5 w-5" />
+          </button>
+          <div className="glass-pill normal-case tracking-normal text-white/80">{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="glass-button h-11 w-11 p-0 text-white" title="Notifications">
+            <FiBell className="h-5 w-5" />
+          </button>
+          <div className="flex h-11 items-center gap-3 rounded-full border border-white/10 bg-white/[0.06] py-1 pl-2 pr-4 shadow-[0_16px_44px_rgba(0,0,0,0.2)]">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#4f8cff] to-[#7c5cff] text-xs font-bold text-white">A</span>
+            <span className="text-sm font-semibold text-white">ALPHA</span>
+          </div>
+        </div>
       </div>
-    </header>
+    </motion.header>
   );
 };
 

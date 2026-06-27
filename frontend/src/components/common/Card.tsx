@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { motion } from 'framer-motion';
 
 interface CardProps {
   title: string;
@@ -8,13 +9,19 @@ interface CardProps {
 
 const Card = ({ title, children, footer }: CardProps) => {
   return (
-    <section className="rounded-3xl border border-white/10 bg-card p-6 shadow-panel">
+    <motion.section
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -3 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="glass-card p-5 sm:p-6"
+    >
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-text">{title}</h2>
+        <h2 className="section-title">{title}</h2>
       </div>
       <div>{children}</div>
       {footer && <div className="mt-6 border-t border-white/10 pt-4">{footer}</div>}
-    </section>
+    </motion.section>
   );
 };
 

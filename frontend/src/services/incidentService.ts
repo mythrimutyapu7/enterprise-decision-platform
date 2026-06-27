@@ -1,19 +1,82 @@
 import api from './api';
 import { CreateIncidentRequest, IncidentDetail, IncidentSummary, AnalysisResponse } from '../types/incident';
 
-export const fetchIncidents = async () => {
-  const response = await api.get<IncidentSummary[]>('/incidents');
-  return response.data;
+interface BackendIncident {
+  _id?: string;
+  id?: string;
+  title?: string;
+  description?: string;
+  severity?: string;
+  status?: string;
+  created_by?: string;
+  createdBy?: string;
+  created_at?: string;
+  createdAt?: string;
+  context?: Record<string, unknown>;
+}
+
+interface BackendListResponse {
+  success?: boolean;
+  count?: number;
+  data?: BackendIncident[];
+}
+
+interface BackendDetailResponse {
+  success?: boolean;
+  data?: BackendIncident;
+}
+
+interface BackendAnalysisResponse {
+  success?: boolean;
+  analysis?: Partial<AnalysisResponse>;
+  data?: Partial<AnalysisResponse>;
+}
+
+const normalizeSeverity = (severity?: string): IncidentSummary['severity'] => {
+  const value = severity?.toLowerCase();
+  if (value === 'critical' || value === 'high' || value === 'medium' || value === 'low') return value;
+  return 'low';
 };
 
-export const fetchIncidentById = async (id: string) => {
-  const response = await api.get<IncidentDetail>(`/incidents/${id}`);
-  return response.data;
+const normalizeStatus = (status?: string): IncidentSummary['status'] => {
+  const value = status?.toLowerCase();
+  if (value === 'open' || value === 'in_progress' || value === 'resolved' || value === 'closed') return value;
+  if (value === 'in progress') return 'in_progress';
+  return 'open';
+};
+
+const normalizeIncident = (incident: BackendIncident): IncidentDetail => ({
+  id: incident.id || incident._id || '',
+  title: incident.title || 'Untitled incident',
+  description: incident.description || '',
+  severity: normalizeSeverity(incident.severity),
+  status: normalizeStatus(incident.status),
+  createdBy: incident.createdBy || incident.created_by || 'Unknown',
+  createdAt: incident.createdAt || incident.created_at || new Date().toISOString(),
+  context: incident.context,
+});
+
+export const fetchIncidents = async (): Promise<IncidentSummary[]> => {
+  const response = await api.get<IncidentSummary[] | BackendListResponse>('/incidents/');
+  const incidents = Array.isArray(response.data) ? response.data : response.data.data || [];
+  return incidents.map((incident) => normalizeIncident(incident));
+};
+
+export const fetchIncidentById = async (id: string): Promise<IncidentDetail> => {
+  const response = await api.get<IncidentDetail | BackendDetailResponse>(`/incidents/${id}`);
+  const incident = 'data' in response.data && response.data.data ? response.data.data : (response.data as BackendIncident);
+  return normalizeIncident(incident);
 };
 
 export const createIncident = async (payload: CreateIncidentRequest) => {
-  const response = await api.post<IncidentDetail>('/incidents', payload);
-  return response.data;
+  const response = await api.post<IncidentDetail>('/incidents/', {
+    title: payload.title,
+    description: payload.description,
+    severity: payload.severity,
+    status: payload.status,
+    created_by: payload.createdBy,
+  });
+  return response.data as AnalysisResponse;
 };
 
 export const deleteIncident = async (id: string) => {
@@ -21,7 +84,17 @@ export const deleteIncident = async (id: string) => {
   return response.data;
 };
 
-export const analyzeIncident = async (id: string) => {
-  const response = await api.post<AnalysisResponse>(`/incidents/${id}/analyze`);
+export const analyzeIncident = async (id: string): Promise<AnalysisResponse> => {
+  const response = await api.post<AnalysisResponse | BackendAnalysisResponse>(`/incidents/${id}/analyze`);
+  if ('analysis' in response.data || 'data' in response.data) {
+    const analysis = response.data.analysis || response.data.data || {};
+    return {
+      incidentSummary: analysis.incidentSummary || {},
+      context: analysis.context || {},
+      riskAnalysis: analysis.riskAnalysis || {},
+      recommendations: analysis.recommendations || {},
+      approval: analysis.approval || {},
+    };
+  }
   return response.data;
 };
