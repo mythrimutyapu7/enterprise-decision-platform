@@ -1,24 +1,50 @@
-import { Outlet } from 'react-router-dom';
-import Sidebar from '../components/layout/Sidebar';
-import Navbar from '../components/layout/Navbar';
+import { Outlet } from "react-router-dom";
+import Sidebar from "../components/layout/Sidebar";
+import Navbar from "../components/layout/Navbar";
 
-const MainLayout = () => {
+export default function MainLayout() {
   return (
-    <div className="relative min-h-screen text-text">
-      <div className="pointer-events-none fixed left-[-8rem] top-12 h-96 w-96 rounded-full bg-[#7c5cff]/18 blur-3xl" />
-      <div className="pointer-events-none fixed right-[-8rem] top-[22rem] h-96 w-96 rounded-full bg-[#4f8cff]/14 blur-3xl" />
-      <div className="pointer-events-none fixed bottom-[-10rem] left-1/3 h-80 w-80 rounded-full bg-[#22c55e]/5 blur-3xl" />
-      <div className="relative z-10 flex min-h-screen gap-5 overflow-hidden px-3 pb-6 pt-4 sm:px-5 md:px-6">
-        <Sidebar />
-        <div className="min-w-0 flex-1">
+    <div className="min-h-screen bg-[#0B1120] text-white">
+
+      {/* Background Effects */}
+
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+
+        <div className="absolute left-[-180px] top-[-120px] h-[420px] w-[420px] rounded-full bg-blue-600/10 blur-[140px]" />
+
+        <div className="absolute right-[-200px] top-[180px] h-[420px] w-[420px] rounded-full bg-violet-600/10 blur-[160px]" />
+
+        <div className="absolute bottom-[-150px] left-1/3 h-[320px] w-[320px] rounded-full bg-cyan-500/5 blur-[120px]" />
+
+      </div>
+
+      <div className="flex min-h-screen">
+
+        {/* Sidebar */}
+
+        <aside className="hidden lg:block">
+          <Sidebar />
+        </aside>
+
+        {/* Main */}
+
+        <div className="flex flex-1 flex-col">
+
           <Navbar />
-          <main className="mx-auto max-w-[1600px] px-1 py-5 sm:px-3 lg:px-5">
-            <Outlet />
+
+          <main className="flex-1 overflow-y-auto p-8">
+
+            <div className="mx-auto max-w-[1600px]">
+
+              <Outlet />
+
+            </div>
+
           </main>
+
         </div>
+
       </div>
     </div>
   );
-};
-
-export default MainLayout;
+}
