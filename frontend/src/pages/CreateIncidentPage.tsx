@@ -50,74 +50,96 @@ const CreateIncidentPage = () => {
         <p className="mt-1 text-sm text-muted">Log a new security incident for tracking and analysis.</p>
       </div>
       <Card title="Incident details">
-        <form onSubmit={handleSubmit} className="grid gap-5">
-          <div className="grid gap-5 sm:grid-cols-2">
-            <label className="block text-sm text-muted">
-              <span className="mb-2 block font-medium text-text">Title</span>
-              <input
-                value={form.title}
-                onChange={handleChange('title')}
-                className="glass-field"
-                placeholder="Incident title"
-              />
-            </label>
-            <label className="block text-sm text-muted">
-              <span className="mb-2 block font-medium text-text">Created By</span>
-              <input
-                value={form.createdBy}
-                onChange={handleChange('createdBy')}
-                className="glass-field"
-                placeholder="Reporter name"
-              />
-            </label>
-          </div>
-          <div className="grid gap-5 sm:grid-cols-2">
-            <label className="block text-sm text-muted">
-              <span className="mb-2 block font-medium text-text">Severity</span>
-              <select
-                value={form.severity}
-                onChange={handleChange('severity')}
-                className="glass-field"
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="critical">Critical</option>
-              </select>
-            </label>
-            <label className="block text-sm text-muted">
-              <span className="mb-2 block font-medium text-text">Status</span>
-              <select
-                value={form.status}
-                onChange={handleChange('status')}
-                className="glass-field"
-              >
-                <option value="open">Open</option>
-                <option value="in_progress">In Progress</option>
-                <option value="resolved">Resolved</option>
-                <option value="closed">Closed</option>
-              </select>
-            </label>
-          </div>
-          <label className="block text-sm text-muted">
-            <span className="mb-2 block font-medium text-text">Description</span>
-            <textarea
-              value={form.description}
-              onChange={handleChange('description')}
-              rows={6}
-              className="glass-field min-h-40 rounded-[24px]"
-              placeholder="Describe the incident and context."
-            />
-          </label>
-          {error && <div className="rounded-[20px] border border-critical/20 bg-critical/10 px-4 py-3 text-sm text-red-200 shadow-[0_0_34px_rgba(239,68,68,0.12)]">{error}</div>}
-          <button
-            type="submit"
-            className="primary-button w-full"
-            disabled={isLoading}
-          >
-            {isLoading ? <Loader /> : 'Create Incident'}
-          </button>
-        </form>
+        <form onSubmit={handleSubmit} className="space-y-7">
+
+  <div className="grid gap-6 md:grid-cols-2">
+
+    <label>
+      <span className="mb-3 block text-sm font-semibold text-white">
+        Incident Title
+      </span>
+
+      <input
+        value={form.title}
+        onChange={handleChange("title")}
+        className="glass-field"
+        placeholder="Suspicious Login Attempt"
+      />
+    </label>
+
+    <label>
+      <span className="mb-3 block text-sm font-semibold text-white">
+        Reported By
+      </span>
+
+      <input
+        value={form.createdBy}
+        onChange={handleChange("createdBy")}
+        className="glass-field"
+        placeholder="John Smith"
+      />
+    </label>
+
+  </div>
+
+  <label>
+
+    <span className="mb-3 block text-sm font-semibold text-white">
+      Incident Description
+    </span>
+
+    <textarea
+      rows={8}
+      value={form.description}
+      onChange={handleChange("description")}
+      className="glass-field min-h-[220px] rounded-3xl"
+      placeholder={`Example:
+
+15 failed login attempts detected from IP 185.xx.xx.xx
+
+Followed by successful authentication.
+
+User belongs to Finance department.
+
+Microsoft Sentinel generated alert.
+
+Possible brute-force attack.`}
+    />
+
+  </label>
+
+  <div className="rounded-3xl border border-blue-500/20 bg-blue-500/10 p-6">
+
+    <h3 className="text-lg font-semibold text-blue-300">
+      AI Analysis
+    </h3>
+
+    <p className="mt-2 text-sm leading-7 text-slate-300">
+
+      Severity, Risk Score, Threat Classification,
+      Recommendations and Approval Decision
+      will be generated automatically after
+      the incident is submitted.
+
+    </p>
+
+  </div>
+
+  {error && (
+    <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-300">
+      {error}
+    </div>
+  )}
+
+  <button
+    type="submit"
+    disabled={isLoading}
+    className="primary-button w-full h-14 text-lg"
+  >
+    {isLoading ? "Creating Incident..." : "Submit Incident"}
+  </button>
+
+</form>
       </Card>
     </motion.div>
   );
