@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from api.dependencies import get_current_user
 from schemas.incident_schema import IncidentCreate
 from services.incident_service import (
     create_incident,
@@ -13,10 +14,13 @@ router = APIRouter(
     tags=["Incidents"]
 )
 
-
 @router.post("/")
-async def create(incident: IncidentCreate):
+async def create(
+    incident: IncidentCreate,
+    user=Depends(get_current_user)
+):
     return await create_incident(incident)
+
 
 @router.get("/")
 async def get_all():
