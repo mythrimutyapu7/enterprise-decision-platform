@@ -1,5 +1,5 @@
-import json
 from pathlib import Path
+import json
 
 
 class MemoryAgent:
@@ -8,7 +8,12 @@ class MemoryAgent:
 
         self.memory_file = Path("memory/incident_memory.json")
 
-        if not self.memory_file.exists():
+        if (
+            not self.memory_file.exists()
+            or
+            self.memory_file.read_text().strip() == ""
+        ):
+
             self.memory_file.write_text("[]")
 
     def save(self, state):
@@ -28,6 +33,9 @@ class MemoryAgent:
 
     def load(self):
 
-        return json.loads(
-            self.memory_file.read_text()
-        )
+        content = self.memory_file.read_text().strip()
+
+        if not content:
+            incidents = []
+        else:
+            incidents = json.loads(content)
