@@ -1,6 +1,6 @@
 import os
 import shutil
-from database.mongodb import database
+from backend.database.mongodb import database
 from datetime import datetime
 files_collection = database["incident_files"]
 

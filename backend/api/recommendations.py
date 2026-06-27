@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from services.recommendation_service import (
+from backend.services.recommendation_service import (
     get_recommendation,
     approve_recommendation
 )

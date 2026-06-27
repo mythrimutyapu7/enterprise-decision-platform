@@ -1,15 +1,27 @@
-from datetime import datetime
+from planner.engine import run_ai_analysis
+from backend.services.incident_service import get_incident_by_id
+
 
 async def analyze_incident(id: str):
+
+    incident_response = await get_incident_by_id(id)
+
+    if not incident_response["success"]:
+        return incident_response
+
+    incident = incident_response["data"]
+
+    ai_input = {
+        "incident_id": 1,   # we'll improve this later
+        "title": incident["title"],
+        "description": incident["description"],
+        "severity": incident["severity"],
+        "source": "Microsoft Sentinel"
+    }
+
+    result = run_ai_analysis(ai_input)
+
     return {
         "success": True,
-        "incident_id": id,
-        "risk": "High",
-        "confidence": 94,
-        "recommendation": "Disable Account",
-        "reasoning": [
-            "Multiple failed logins",
-            "Login from suspicious location"
-        ],
-        "created_at": datetime.utcnow()
+        "analysis": result
     }

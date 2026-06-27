@@ -1,6 +1,6 @@
-from database.mongodb import database
-from utils.security import hash_password, verify_password
-from utils.jwt_handler import create_access_token
+from backend.database.mongodb import database
+from backend.utils.security import hash_password, verify_password
+from backend.utils.jwt_handler import create_access_token
 from datetime import datetime
 from fastapi import HTTPException, status
 

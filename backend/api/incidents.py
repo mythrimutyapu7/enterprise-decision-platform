@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
-from api.dependencies import get_current_user
-from schemas.incident_schema import IncidentCreate
-from services.incident_service import (
+from backend.api.dependencies import get_current_user
+from backend.schemas.incident_schema import IncidentCreate
+from backend.services.incident_service import (
     create_incident,
     get_all_incidents,
     get_incident_by_id,

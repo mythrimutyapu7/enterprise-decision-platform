@@ -1,4 +1,4 @@
-from database.mongodb import database
+from backend.database.mongodb import database
 from bson import ObjectId
 
 recommendations_collection = database["recommendations"]
