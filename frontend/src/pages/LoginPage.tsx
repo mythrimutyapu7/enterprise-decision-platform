@@ -32,8 +32,17 @@ const LoginPage = () => {
       if (!response.accessToken) {
         throw new Error('Login failed. No token received.');
       }
-      localStorage.setItem('auth_token', response.accessToken);
-      navigate('/dashboard');
+      localStorage.setItem(
+  "auth_token",
+  response.accessToken
+);
+
+localStorage.setItem(
+  "currentUser",
+  JSON.stringify(response.user)
+);
+
+navigate("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Invalid credentials. Please try again.');
     } finally {

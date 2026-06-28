@@ -1,6 +1,8 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { useEffect } from 'react';
-import { setNavigationHandler } from '../services/api';
+import { useEffect } from "react";
+
+import { setNavigationHandler } from "../services/api";
+
 import Sidebar from "../components/layout/Sidebar";
 import Navbar from "../components/layout/Navbar";
 
@@ -12,9 +14,9 @@ export default function MainLayout() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-[#0B1120] text-white">
+    <div className="h-screen overflow-hidden bg-[#0B1120] text-white">
 
-      {/* Background Effects */}
+      {/* Background */}
 
       <div className="fixed inset-0 -z-10 overflow-hidden">
 
@@ -26,21 +28,25 @@ export default function MainLayout() {
 
       </div>
 
-      <div className="flex min-h-screen">
+      <div className="flex h-full overflow-hidden">
 
         {/* Sidebar */}
 
-        <aside className="hidden lg:block">
+        <aside className="hidden lg:block w-80 flex-shrink-0">
+
           <Sidebar />
+
         </aside>
 
         {/* Main */}
 
-        <div className="flex flex-1 flex-col">
+        <div className=" flex flex-1 flex-col overflow-hidden px-6 pt-4">
 
           <Navbar />
 
-          <main className="flex-1 overflow-y-auto px-6 pb-8 pt-4 sm:px-8">
+          {/* Only this scrolls */}
+
+          <main className="flex-1 overflow-y-auto pb-8">
 
             <div className="mx-auto max-w-[1600px]">
 
@@ -53,6 +59,7 @@ export default function MainLayout() {
         </div>
 
       </div>
+
     </div>
   );
 }
