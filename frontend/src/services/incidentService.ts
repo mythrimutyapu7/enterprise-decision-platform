@@ -19,6 +19,8 @@ interface BackendIncident {
   createdAt?: string;
   context?: Record<string, unknown>;
   analyst_notes?: string;
+  analyst_notes_updated_at?: string;
+  analysis?: Record<string, unknown>;
 }
 
 interface BackendListResponse {
@@ -88,6 +90,9 @@ const normalizeIncident = (
     new Date().toISOString(),
   context: incident.context,
   analystNotes: incident.analyst_notes,
+  analystNotesUpdatedAt:
+    incident.analyst_notes_updated_at,
+  analysis: incident.analysis,
 });
 
 export const fetchIncidents = async (): Promise<

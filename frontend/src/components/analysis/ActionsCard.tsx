@@ -36,7 +36,7 @@ export default function ActionsCard({ recommendation }: Props) {
         <div className="flex gap-3">
           <FiShield className="mt-1 text-blue-400 shrink-0" />
 
-          <p className="text-sm leading-6 text-slate-200">
+          <p className="break-words text-sm leading-6 text-slate-200">
             {recommendation.recommended_action}
           </p>
         </div>
@@ -50,7 +50,7 @@ export default function ActionsCard({ recommendation }: Props) {
           >
             <FiArrowRight className="text-red-400 shrink-0" />
 
-            <span className="text-sm text-slate-300 line-clamp-2">
+            <span className="break-words text-sm text-slate-300 line-clamp-2">
               {item}
             </span>
           </div>

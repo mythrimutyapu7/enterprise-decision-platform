@@ -40,7 +40,7 @@ export default function MainLayout() {
 
           <Navbar />
 
-          <main className="flex-1 overflow-y-auto p-8">
+          <main className="flex-1 overflow-y-auto px-6 pb-8 pt-4 sm:px-8">
 
             <div className="mx-auto max-w-[1600px]">
 

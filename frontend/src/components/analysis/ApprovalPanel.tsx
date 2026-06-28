@@ -74,7 +74,7 @@ export default function ApprovalPanel({
               Status
             </p>
 
-            <h3 className="font-semibold text-white">
+            <h3 className="break-words font-semibold text-white">
               {approval.execution_status}
             </h3>
 
@@ -92,7 +92,7 @@ export default function ApprovalPanel({
 
           <FiUser className="text-blue-400" />
 
-          <span className="text-sm text-slate-300">
+            <span className="break-words text-sm text-slate-300">
             {approval.approved_by || "Security Analyst"}
           </span>
 

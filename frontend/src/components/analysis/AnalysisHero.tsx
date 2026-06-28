@@ -34,7 +34,7 @@ export default function AnalysisHero({
 
         {/* LEFT */}
 
-        <div className="max-w-4xl">
+        <div className="max-w-4xl min-w-0">
 
           <p className="text-xs uppercase tracking-[0.35em] text-blue-400">
 
@@ -42,13 +42,13 @@ export default function AnalysisHero({
 
           </p>
 
-          <h1 className="mt-3 text-4xl font-bold text-white">
+          <h1 className="mt-3 break-words text-4xl font-bold text-white">
 
             {incident.title}
 
           </h1>
 
-          <p className="mt-5 leading-8 text-slate-300">
+          <p className="mt-5 break-words leading-8 text-slate-300">
 
             {incident.summary}
 

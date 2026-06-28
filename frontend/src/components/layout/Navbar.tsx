@@ -15,7 +15,7 @@ const Navbar = () => {
       initial={{ opacity: 0, y: -14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="glass-card sticky top-3 z-20 mb-6 px-4 py-4 shadow-[0_38px_90px_rgba(0,0,0,0.24)] sm:px-5"
+      className="glass-card relative z-10 mb-6 px-4 py-4 shadow-[0_38px_90px_rgba(0,0,0,0.24)] sm:px-5"
     >
       <div className="flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
         <div className="min-w-0">

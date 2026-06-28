@@ -102,7 +102,7 @@ export default function ApprovalCard({ approval }: Props) {
                 Approved By
               </p>
 
-              <p className="mt-2 text-white">
+              <p className="mt-2 break-words text-white">
                 {approval.approved_by || "Pending Analyst Review"}
               </p>
 
@@ -124,7 +124,7 @@ export default function ApprovalCard({ approval }: Props) {
                 Approval Timestamp
               </p>
 
-              <p className="mt-2 text-white">
+              <p className="mt-2 break-words text-white">
                 {approval.approval_timestamp || "Not Available"}
               </p>
 
@@ -146,7 +146,7 @@ export default function ApprovalCard({ approval }: Props) {
                 Reviewer Comments
               </p>
 
-              <p className="mt-3 leading-7 text-slate-300">
+              <p className="mt-3 break-words leading-7 text-slate-300">
                 {approval.reviewer_comments ||
                   "Awaiting manual analyst approval before execution."}
               </p>

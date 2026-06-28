@@ -61,7 +61,7 @@ export default function FindingsCard({
                 size={16}
               />
 
-              <p className="text-sm text-slate-300 line-clamp-2">
+              <p className="break-words text-sm text-slate-300 line-clamp-2">
 
                 {item}
 
@@ -109,7 +109,7 @@ export default function FindingsCard({
                 size={16}
               />
 
-              <p className="text-sm text-slate-300 line-clamp-2">
+              <p className="break-words text-sm text-slate-300 line-clamp-2">
 
                 {item}
 

@@ -8,12 +8,15 @@ export interface IncidentSummary {
   status: IncidentStatus;
   createdBy: string;
   createdAt: string;
+  analystNotes?: string;
+  analystNotesUpdatedAt?: string;
 }
 
 export interface IncidentDetail extends IncidentSummary {
   description: string;
   context?: Record<string, unknown>;
   analystNotes?: string;
+  analysis?: Record<string, unknown>;
 }
 
 export interface CreateIncidentRequest {

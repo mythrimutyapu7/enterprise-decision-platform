@@ -31,7 +31,7 @@ function ListSection({
     <div className="mt-10">
       <div className="mb-4 flex items-center gap-3">
         {icon}
-        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <h3 className="break-words text-lg font-semibold text-white">{title}</h3>
       </div>
 
       <div className="space-y-3">
@@ -46,7 +46,7 @@ function ListSection({
             >
               <div className="flex items-start gap-3">
                 <FiCheckCircle className={text + " mt-1"} />
-                <p className="text-slate-300 leading-7">{item}</p>
+                <p className="break-words text-slate-300 leading-7">{item}</p>
               </div>
             </motion.div>
           ))
@@ -97,7 +97,7 @@ export default function RiskScoreCard({ analysis }: Props) {
         <div>
           <p className="eyebrow">AI RISK ASSESSMENT</p>
 
-          <h2 className="mt-2 text-3xl font-bold text-white">
+          <h2 className="mt-2 break-words text-3xl font-bold text-white">
             Risk Evaluation
           </h2>
         </div>
@@ -107,7 +107,7 @@ export default function RiskScoreCard({ analysis }: Props) {
             Confidence
           </p>
 
-          <h3 className="mt-2 text-3xl font-bold text-blue-400">
+          <h3 className="mt-2 break-words text-3xl font-bold text-blue-400">
             {confidence}%
           </h3>
         </div>
@@ -123,7 +123,7 @@ export default function RiskScoreCard({ analysis }: Props) {
             initial={{ scale: .8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: .5 }}
-            className={`text-7xl font-bold ${color}`}
+            className={`break-words text-7xl font-bold ${color}`}
           >
             {score}
           </motion.h1>
