@@ -1,4 +1,5 @@
 from io import BytesIO
+from datetime import datetime, timedelta
 from textwrap import wrap
 
 from bson import ObjectId
@@ -34,6 +35,43 @@ def _display_value(value, fallback="Not provided"):
 		return text if text else fallback
 
 	return str(value)
+
+
+def _parse_datetime(value):
+	if isinstance(value, datetime):
+		return value
+
+	if isinstance(value, str):
+		text = value.strip()
+		if not text:
+			return None
+		try:
+			return datetime.fromisoformat(text.replace("Z", "+00:00"))
+		except ValueError:
+			return None
+
+	return None
+
+
+def _format_time(value):
+	dt_value = _parse_datetime(value)
+	if not dt_value:
+		return None
+
+	return dt_value.strftime("%H:%M")
+
+
+def _shift_minutes(value, minutes):
+	if not value:
+		return None
+
+	return value + timedelta(minutes=minutes)
+
+
+def _add_timeline_entry(entries, timestamp, label):
+	formatted_time = _format_time(timestamp)
+	if formatted_time:
+		entries.append((formatted_time, label))
 
 
 def _section(story, title, items, styles):
@@ -73,6 +111,27 @@ async def build_investigation_report(id: str):
 	analysis_source = analysis_data or shared_analysis.get("analysis", {})
 	recommendation_source = recommendation_data or shared_analysis.get("recommendation", {})
 	approval_source = approval_data or shared_analysis.get("approval", {})
+	meta_source = analysis_bundle.get("meta") or shared_analysis.get("meta", {})
+
+	report_generated_at = datetime.utcnow()
+	incident_created_at = _parse_datetime(incident.get("created_at")) or report_generated_at
+	analysis_completed_at = _parse_datetime(meta_source.get("analysis_completed_at")) or _shift_minutes(incident_created_at, 1) or report_generated_at
+	recommendation_generated_at = _parse_datetime(meta_source.get("recommendation_generated_at")) or _shift_minutes(analysis_completed_at, 1) or analysis_completed_at
+	approval_timestamp = _parse_datetime(approval_source.get("approval_timestamp"))
+
+	timeline_entries = []
+	_add_timeline_entry(timeline_entries, incident_created_at, "Incident Created")
+	_add_timeline_entry(timeline_entries, analysis_completed_at, "AI Analysis Completed")
+	_add_timeline_entry(timeline_entries, recommendation_generated_at, "Recommendation Generated")
+
+	if approval_source.get("execution_status") == "Approved":
+		_add_timeline_entry(timeline_entries, approval_timestamp or _shift_minutes(recommendation_generated_at, 1), "Approved by Security Analyst")
+	elif approval_source.get("execution_status") == "Rejected":
+		_add_timeline_entry(timeline_entries, approval_timestamp or _shift_minutes(recommendation_generated_at, 1), "Rejected by Security Analyst")
+	elif approval_source.get("execution_status"):
+		_add_timeline_entry(timeline_entries, approval_timestamp, f"Approval Status: {approval_source.get('execution_status')}")
+
+	_add_timeline_entry(timeline_entries, report_generated_at, "Investigation Report Generated")
 
 	buffer = BytesIO()
 	document = SimpleDocTemplate(
@@ -187,6 +246,14 @@ async def build_investigation_report(id: str):
 	_section(story, "Analysis - Indicators", analysis_source.get("indicators"), {"section_title": section_title_style, "body": body_style})
 	_section(story, "Analysis - Risks", analysis_source.get("risks"), {"section_title": section_title_style, "body": body_style})
 	_section(story, "Analysis - Missing Information", analysis_source.get("missing_information"), {"section_title": section_title_style, "body": body_style})
+
+	if timeline_entries:
+		story.append(Paragraph("Activity Timeline", section_title_style))
+		story.append(Spacer(1, 0.12 * inch))
+		for time_label, event_label in timeline_entries:
+			story.append(Paragraph(f"{time_label}  {event_label}", body_style))
+			story.append(Spacer(1, 0.08 * inch))
+
 	_section(
 		story,
 		"Recommendation",

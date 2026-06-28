@@ -6,9 +6,11 @@ import Loader from "../components/common/Loader";
 import EmptyState from "../components/common/EmptyState";
 
 import {
+  approveRecommendation,
   analyzeIncident,
   downloadInvestigationReport,
   getSavedAnalysis,
+  rejectRecommendation,
 } from "../services/incidentService";
 
 import { AnalysisResponse } from "../types/incident";
@@ -35,6 +37,8 @@ export default function AnalysisPage() {
     useState<AnalysisResponse | null>(null);
 
   const [error, setError] = useState("");
+  const [isUpdatingApproval, setIsUpdatingApproval] =
+    useState(false);
 
   const handleDownloadReport = async () => {
 
@@ -56,6 +60,80 @@ export default function AnalysisPage() {
     catch {
 
       setError("Unable to download investigation report.");
+
+    }
+
+  };
+
+  const refreshAnalysis = async () => {
+
+    const latest = await getSavedAnalysis(incidentId);
+
+    if (latest) {
+
+      setAnalysis(latest);
+
+    }
+
+  };
+
+  const handleApprove = async () => {
+
+    try {
+
+      setIsUpdatingApproval(true);
+      setError("");
+
+      const response = await approveRecommendation(incidentId);
+
+      if (!response?.success) {
+        throw new Error(response?.error || "Approval failed.");
+      }
+
+      await refreshAnalysis();
+
+    }
+
+    catch (err: any) {
+
+      setError(err?.message || "Unable to approve recommendation.");
+
+    }
+
+    finally {
+
+      setIsUpdatingApproval(false);
+
+    }
+
+  };
+
+  const handleReject = async () => {
+
+    try {
+
+      setIsUpdatingApproval(true);
+      setError("");
+
+      const response = await rejectRecommendation(incidentId);
+
+      if (!response?.success) {
+        throw new Error(response?.error || "Rejection failed.");
+      }
+
+      await refreshAnalysis();
+
+    }
+
+    catch (err: any) {
+
+      setError(err?.message || "Unable to reject recommendation.");
+
+    }
+
+    finally {
+
+      setIsUpdatingApproval(false);
 
     }
 
@@ -227,6 +305,9 @@ export default function AnalysisPage() {
             onDownloadReport={
               handleDownloadReport
             }
+            onApprove={handleApprove}
+            onReject={handleReject}
+            isUpdating={isUpdatingApproval}
           />
 
         </div>

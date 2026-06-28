@@ -1,4 +1,5 @@
 from bson import ObjectId
+from datetime import datetime
 
 from planner.engine import run_ai_analysis
 
@@ -84,6 +85,11 @@ async def analyze_incident(id: str):
     try:
 
         result = run_ai_analysis(ai_input)
+        generated_at = datetime.utcnow().isoformat()
+
+        result.setdefault("meta", {})
+        result["meta"]["analysis_completed_at"] = generated_at
+        result["meta"]["recommendation_generated_at"] = generated_at
 
         await incidents_collection.update_one(
 
@@ -140,6 +146,11 @@ async def reanalyze_incident(id: str):
     try:
 
         result = run_ai_analysis(ai_input)
+        generated_at = datetime.utcnow().isoformat()
+
+        result.setdefault("meta", {})
+        result["meta"]["analysis_completed_at"] = generated_at
+        result["meta"]["recommendation_generated_at"] = generated_at
 
         await incidents_collection.update_one(
 

@@ -12,12 +12,18 @@ interface Props {
   approval: any;
   confidence: number;
   onDownloadReport: () => void;
+  onApprove: () => void;
+  onReject: () => void;
+  isUpdating: boolean;
 }
 
 export default function ApprovalPanel({
   approval,
   confidence,
   onDownloadReport,
+  onApprove,
+  onReject,
+  isUpdating,
 }: Props) {
 
   const approved = approval?.approved;
@@ -134,25 +140,31 @@ export default function ApprovalPanel({
       <div className="mt-5 grid grid-cols-2 gap-3">
 
         <button
+          type="button"
+          onClick={onApprove}
+          disabled={isUpdating}
           className="rounded-xl bg-green-600 py-2.5 font-semibold text-white hover:bg-green-500"
         >
           <div className="flex items-center justify-center gap-2">
 
             <FiCheckCircle />
 
-            Approve
+            {isUpdating ? "Updating..." : "Approve"}
 
           </div>
         </button>
 
         <button
+          type="button"
+          onClick={onReject}
+          disabled={isUpdating}
           className="rounded-xl bg-red-600 py-2.5 font-semibold text-white hover:bg-red-500"
         >
           <div className="flex items-center justify-center gap-2">
 
             <FiXCircle />
 
-            Reject
+            {isUpdating ? "Updating..." : "Reject"}
 
           </div>
         </button>
