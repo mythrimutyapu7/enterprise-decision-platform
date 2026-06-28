@@ -26,7 +26,11 @@ async def create_incident(incident):
             # Approval Information
             "approved": False,
             "approved_by": None,
-            "approved_at": None
+            "approved_at": None,
+
+            # Analyst Investigation Notes
+            "analyst_notes": "",
+            "analyst_notes_updated_at": None
         }
 
         result = await incidents_collection.insert_one(
@@ -37,6 +41,56 @@ async def create_incident(incident):
             "success": True,
             "message": "Incident Created Successfully",
             "id": str(result.inserted_id)
+        }
+
+    except Exception as e:
+
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+
+# --------------------------------------------------
+# Update Analyst Notes
+# --------------------------------------------------
+
+async def update_analyst_notes(id, notes):
+
+    try:
+
+        notes_value = (notes or "").strip()
+
+        await incidents_collection.update_one(
+            {"_id": ObjectId(id)},
+            {
+                "$set": {
+                    "analyst_notes": notes_value,
+                    "analyst_notes_updated_at": datetime.utcnow(),
+                }
+            },
+        )
+
+        incident = await incidents_collection.find_one(
+            {"_id": ObjectId(id)}
+        )
+
+        if not incident:
+
+            return {
+                "success": False,
+                "message": "Incident not found"
+            }
+
+        incident["_id"] = str(incident["_id"])
+
+        return {
+            "success": True,
+            "message": "Analyst notes saved successfully",
+            "data": {
+                "analyst_notes": incident.get("analyst_notes", ""),
+                "analyst_notes_updated_at": incident.get("analyst_notes_updated_at"),
+            },
         }
 
     except Exception as e:

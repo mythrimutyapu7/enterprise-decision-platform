@@ -13,6 +13,7 @@ export interface IncidentSummary {
 export interface IncidentDetail extends IncidentSummary {
   description: string;
   context?: Record<string, unknown>;
+  analystNotes?: string;
 }
 
 export interface CreateIncidentRequest {

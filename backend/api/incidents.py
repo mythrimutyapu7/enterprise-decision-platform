@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends
+from pydantic import BaseModel
 from backend.api.dependencies import get_current_user
 from backend.schemas.incident_schema import IncidentCreate
 from backend.services.incident_service import (
     create_incident,
     get_all_incidents,
     get_incident_by_id,
-    delete_incident
+    delete_incident,
+    update_analyst_notes,
 )
 
 
@@ -13,6 +15,10 @@ router = APIRouter(
     prefix="/incidents",
     tags=["Incidents"]
 )
+
+
+class AnalystNotesUpdate(BaseModel):
+    notes: str = ""
 
 @router.post("/")
 async def create(
@@ -33,3 +39,8 @@ async def get_one(id: str):
 @router.delete("/{id}")
 async def delete(id: str):
     return await delete_incident(id)
+
+
+@router.put("/{id}/notes")
+async def update_notes(id: str, payload: AnalystNotesUpdate):
+    return await update_analyst_notes(id, payload.notes)

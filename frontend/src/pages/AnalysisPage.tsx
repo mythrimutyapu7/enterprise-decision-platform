@@ -8,6 +8,7 @@ import EmptyState from "../components/common/EmptyState";
 import {
   approveRecommendation,
   analyzeIncident,
+  fetchIncidentById,
   downloadInvestigationReport,
   getSavedAnalysis,
   rejectRecommendation,
@@ -19,6 +20,7 @@ import AnalysisHero from "../components/analysis/AnalysisHero";
 import FindingsCard from "../components/analysis/FindingsCard";
 import ActionsCard from "../components/analysis/ActionsCard";
 import ApprovalPanel from "../components/analysis/ApprovalPanel";
+import AnalystNotesCard from "../components/analysis/AnalystNotesCard";
 
 export default function AnalysisPage() {
 
@@ -39,6 +41,27 @@ export default function AnalysisPage() {
   const [error, setError] = useState("");
   const [isUpdatingApproval, setIsUpdatingApproval] =
     useState(false);
+  const [analystNotes, setAnalystNotes] = useState("");
+
+  const loadAnalystNotes = async () => {
+
+    try {
+
+      const incidentDetails = await fetchIncidentById(
+        incidentId
+      );
+
+      setAnalystNotes(incidentDetails.analystNotes || "");
+
+    }
+
+    catch {
+
+      setAnalystNotes("");
+
+    }
+
+  };
 
   const handleDownloadReport = async () => {
 
@@ -175,6 +198,8 @@ export default function AnalysisPage() {
 
           setAnalysis(saved);
 
+          await loadAnalystNotes();
+
           return;
 
         }
@@ -194,6 +219,8 @@ export default function AnalysisPage() {
         );
 
         setAnalysis(generated);
+
+        await loadAnalystNotes();
 
       }
 
@@ -313,6 +340,12 @@ export default function AnalysisPage() {
         </div>
 
       </div>
+
+      <AnalystNotesCard
+        incidentId={incidentId}
+        initialNotes={analystNotes}
+        onSaved={setAnalystNotes}
+      />
 
     </motion.div>
 

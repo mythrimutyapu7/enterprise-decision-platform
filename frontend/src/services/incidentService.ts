@@ -18,6 +18,7 @@ interface BackendIncident {
   created_at?: string;
   createdAt?: string;
   context?: Record<string, unknown>;
+  analyst_notes?: string;
 }
 
 interface BackendListResponse {
@@ -86,6 +87,7 @@ const normalizeIncident = (
     incident.created_at ||
     new Date().toISOString(),
   context: incident.context,
+  analystNotes: incident.analyst_notes,
 });
 
 export const fetchIncidents = async (): Promise<
@@ -143,6 +145,20 @@ export const deleteIncident = async (
 
   const response = await api.delete(
     `/incidents/${id}`
+  );
+
+  return response.data;
+
+};
+
+export const saveAnalystNotes = async (
+  id: string,
+  notes: string
+) => {
+
+  const response = await api.put(
+    `/incidents/${id}/notes`,
+    { notes }
   );
 
   return response.data;

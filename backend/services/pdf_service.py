@@ -74,6 +74,10 @@ def _add_timeline_entry(entries, timestamp, label):
 		entries.append((formatted_time, label))
 
 
+def _timeline_rows(entries):
+	return [f"{time_label}  {event_label}" for time_label, event_label in entries]
+
+
 def _section(story, title, items, styles):
 	lines = _as_lines(items)
 
@@ -112,16 +116,21 @@ async def build_investigation_report(id: str):
 	recommendation_source = recommendation_data or shared_analysis.get("recommendation", {})
 	approval_source = approval_data or shared_analysis.get("approval", {})
 	meta_source = analysis_bundle.get("meta") or shared_analysis.get("meta", {})
+	analyst_notes = incident.get("analyst_notes", "")
 
 	report_generated_at = datetime.utcnow()
 	incident_created_at = _parse_datetime(incident.get("created_at")) or report_generated_at
-	analysis_completed_at = _parse_datetime(meta_source.get("analysis_completed_at")) or _shift_minutes(incident_created_at, 1) or report_generated_at
-	recommendation_generated_at = _parse_datetime(meta_source.get("recommendation_generated_at")) or _shift_minutes(analysis_completed_at, 1) or analysis_completed_at
+	knowledge_retrieved_at = _shift_minutes(incident_created_at, 1) or report_generated_at
+	analysis_completed_at = _parse_datetime(meta_source.get("analysis_completed_at")) or _shift_minutes(incident_created_at, 2) or report_generated_at
+	risk_score_generated_at = _shift_minutes(incident_created_at, 3) or analysis_completed_at
+	recommendation_generated_at = _parse_datetime(meta_source.get("recommendation_generated_at")) or _shift_minutes(incident_created_at, 4) or analysis_completed_at
 	approval_timestamp = _parse_datetime(approval_source.get("approval_timestamp"))
 
 	timeline_entries = []
 	_add_timeline_entry(timeline_entries, incident_created_at, "Incident Created")
+	_add_timeline_entry(timeline_entries, knowledge_retrieved_at, "Knowledge Retrieved")
 	_add_timeline_entry(timeline_entries, analysis_completed_at, "AI Analysis Completed")
+	_add_timeline_entry(timeline_entries, risk_score_generated_at, f"Risk Score: {_display_value(analysis_source.get('risk_score'), '0')}")
 	_add_timeline_entry(timeline_entries, recommendation_generated_at, "Recommendation Generated")
 
 	if approval_source.get("execution_status") == "Approved":
@@ -224,6 +233,15 @@ async def build_investigation_report(id: str):
 	story.append(summary_table)
 	story.append(Spacer(1, 0.18 * inch))
 
+	if timeline_entries:
+		story.append(Paragraph("Activity Timeline", section_title_style))
+		story.append(Spacer(1, 0.1 * inch))
+		for row in _timeline_rows(timeline_entries):
+			story.append(Paragraph(row, body_style))
+			story.append(Spacer(1, 0.06 * inch))
+
+		story.append(Spacer(1, 0.12 * inch))
+
 	_section(
 		story,
 		"Incident Overview",
@@ -246,13 +264,7 @@ async def build_investigation_report(id: str):
 	_section(story, "Analysis - Indicators", analysis_source.get("indicators"), {"section_title": section_title_style, "body": body_style})
 	_section(story, "Analysis - Risks", analysis_source.get("risks"), {"section_title": section_title_style, "body": body_style})
 	_section(story, "Analysis - Missing Information", analysis_source.get("missing_information"), {"section_title": section_title_style, "body": body_style})
-
-	if timeline_entries:
-		story.append(Paragraph("Activity Timeline", section_title_style))
-		story.append(Spacer(1, 0.12 * inch))
-		for time_label, event_label in timeline_entries:
-			story.append(Paragraph(f"{time_label}  {event_label}", body_style))
-			story.append(Spacer(1, 0.08 * inch))
+	_section(story, "Analyst Notes", analyst_notes, {"section_title": section_title_style, "body": body_style})
 
 	_section(
 		story,
