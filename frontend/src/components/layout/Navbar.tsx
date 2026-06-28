@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FiBell, FiSearch, FiMoon, FiSun, FiCalendar, FiChevronDown } from "react-icons/fi";
+import { FiSearch, FiMoon, FiSun, FiCalendar, FiChevronDown } from "react-icons/fi";
 
 const Navbar = () => {
   const [currentDate, setCurrentDate] = useState("");
@@ -60,14 +60,6 @@ const Navbar = () => {
 
       {/* CONTROLS (Right) */}
       <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-start">
-        {/* Notifications */}
-        <button className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08] transition duration-300">
-          <FiBell className="h-5 w-5" />
-          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-[0_0_10px_rgba(239,68,68,0.5)]">
-            3
-          </span>
-        </button>
-
         {/* Theme Toggle */}
         <button 
           onClick={toggleTheme}

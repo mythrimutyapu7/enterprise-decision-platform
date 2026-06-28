@@ -35,16 +35,6 @@ const menuItems = [
     icon: FiActivity,
   },
   {
-    label: "Playbooks",
-    path: "/playbooks",
-    icon: FiBookOpen,
-  },
-  {
-    label: "Threat Intelligence",
-    path: "/threat-intelligence",
-    icon: FiDatabase,
-  },
-  {
     label: "Reports",
     path: "/reports",
     icon: FiFileText,
