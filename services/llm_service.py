@@ -65,76 +65,148 @@ class LLMService:
                 time.sleep(2)
 
     # =====================================================
-    # NEW : ONE Gemini call for the entire workflow
+    # SINGLE GEMINI CALL
     # =====================================================
 
     def generate_complete_analysis(self, incident):
 
         prompt = f"""
-You are a Senior Enterprise SOC AI.
+You are Microsoft Security Copilot.
 
-Analyze the following incident.
+You are assisting an experienced SOC analyst.
 
-TITLE:
+Your response will be displayed on a single enterprise dashboard.
+
+DO NOT write a report.
+
+DO NOT explain your reasoning.
+
+DO NOT repeat the incident description.
+
+Keep every response concise.
+
+----------------------------------------------------
+
+INCIDENT
+
+Title:
 {incident.title}
 
-DESCRIPTION:
+Description:
 {incident.description}
 
-SOURCE:
+Source:
 {incident.source}
+
+----------------------------------------------------
 
 Return ONLY valid JSON.
 
-DO NOT explain.
-
-DO NOT use markdown.
-
-Return this exact structure:
-
 {{
-  "incident": {{
-    "summary": "",
-    "incident_type": "",
-    "severity": ""
-  }},
+    "incident": {{
+        "summary": "",
+        "incident_type": "",
+        "severity": ""
+    }},
 
-  "context": {{
-    "security_policies": [],
-    "incident_playbooks": [],
-    "organizational_notes": [],
-    "threat_intelligence": []
-  }},
+    "context": {{
+        "security_policies": [],
+        "incident_playbooks": [],
+        "organizational_notes": [],
+        "threat_intelligence": []
+    }},
 
-  "analysis": {{
-    "risk_score": 0,
-    "risk_level": "",
-    "confidence": 0,
-    "indicators": [],
-    "risks": [],
-    "missing_information": [],
-    "opportunities": []
-  }},
+    "analysis": {{
+        "risk_score": 0,
+        "risk_level": "",
+        "confidence": 0,
+        "indicators": [],
+        "risks": [],
+        "missing_information": []
+    }},
 
-  "recommendation": {{
-    "recommended_action": "",
-    "action_priority": "",
-    "business_impact": "",
-    "reasoning": [],
-    "supporting_evidence": [],
-    "alternative_actions": [],
-    "follow_up_actions": [],
-    "confidence": 0
-  }},
+    "recommendation": {{
+        "recommended_action": "",
+        "action_priority": "",
+        "business_impact": "",
+        "follow_up_actions": [],
+        "confidence": 0
+    }},
 
-  "approval": {{
-    "approved": false,
-    "execution_status": "Pending Analyst Review",
-    "approved_by": "",
-    "approval_timestamp": "",
-    "reviewer_comments": ""
-  }}
+    "approval": {{
+        "approved": false,
+        "execution_status": "Pending",
+        "approved_by": "Pending Analyst Review",
+        "approval_timestamp": "",
+        "reviewer_comments": "Awaiting analyst approval."
+    }}
 }}
+
+----------------------------------------------------
+
+RULES
+
+Executive Summary
+- Maximum TWO sentences.
+- Maximum 40 words.
+
+Indicators
+- Maximum FIVE bullets.
+- Less than 8 words each.
+
+Risks
+- Maximum THREE bullets.
+- Less than 8 words each.
+
+Missing Information
+- Maximum THREE bullets.
+- Less than 8 words each.
+
+Security Policies
+- Maximum THREE items.
+
+Incident Playbooks
+- Maximum THREE items.
+
+Organizational Notes
+- Maximum TWO items.
+
+Threat Intelligence
+- Maximum TWO items.
+
+Recommended Action
+- ONE sentence only.
+- Maximum 20 words.
+
+Follow-up Actions
+- Maximum FOUR bullets.
+- Less than 6 words each.
+
+Business Impact
+- ONE short sentence.
+- Maximum 15 words.
+
+Risk Score
+- Integer between 0 and 100.
+
+Confidence
+- Integer between 0 and 100.
+
+IMPORTANT
+
+Think like a SOC analyst.
+
+Do not write explanations.
+
+Do not generate paragraphs.
+
+Do not repeat information.
+
+Do not use markdown.
+
+Return JSON only.
 """
+
         logger.success("✅ SINGLE GEMINI CALL")
+
         return self.generate_json(prompt)

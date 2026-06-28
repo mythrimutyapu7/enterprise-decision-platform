@@ -28,24 +28,9 @@ class RecommendationAgent(BaseAgent):
             ""
         )
 
-        state.recommendation.reasoning = result.get(
-            "reasoning",
-            []
-        )
-
-        state.recommendation.supporting_evidence = result.get(
-            "supporting_evidence",
-            []
-        )
-
         state.recommendation.confidence = result.get(
             "confidence",
             0
-        )
-
-        state.recommendation.alternative_actions = result.get(
-            "alternative_actions",
-            []
         )
 
         state.recommendation.follow_up_actions = result.get(
