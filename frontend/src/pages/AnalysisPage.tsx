@@ -18,9 +18,15 @@ import ActionsCard from "../components/analysis/ActionsCard";
 import ApprovalPanel from "../components/analysis/ApprovalPanel";
 
 export default function AnalysisPage() {
+
   const [searchParams] = useSearchParams();
 
-  const incidentId = searchParams.get("id") ?? "";
+  const urlIncidentId = searchParams.get("id");
+
+  const incidentId =
+    urlIncidentId ||
+    localStorage.getItem("lastAnalysisId") ||
+    "";
 
   const [loading, setLoading] = useState(true);
 
@@ -31,7 +37,13 @@ export default function AnalysisPage() {
 
   useEffect(() => {
 
-    if (!incidentId) return;
+    if (!incidentId) {
+
+      setLoading(false);
+
+      return;
+
+    }
 
     async function load() {
 
@@ -41,15 +53,21 @@ export default function AnalysisPage() {
 
         setError("");
 
-        // ----------------------------------
-        // Try loading existing analysis
-        // ----------------------------------
+        // -----------------------------
+        // Load saved analysis first
+        // -----------------------------
 
-        const saved = await getSavedAnalysis(
-          incidentId
-        );
+        const saved =
+          await getSavedAnalysis(
+            incidentId
+          );
 
         if (saved) {
+
+          localStorage.setItem(
+            "lastAnalysisId",
+            incidentId
+          );
 
           setAnalysis(saved);
 
@@ -57,25 +75,34 @@ export default function AnalysisPage() {
 
         }
 
-        // ----------------------------------
-        // No analysis yet → Run AI
-        // ----------------------------------
+        // -----------------------------
+        // Generate AI analysis
+        // -----------------------------
 
         const generated =
           await analyzeIncident(
             incidentId
           );
 
+        localStorage.setItem(
+          "lastAnalysisId",
+          incidentId
+        );
+
         setAnalysis(generated);
 
-      } catch (err: any) {
+      }
+
+      catch (err: any) {
 
         setError(
-          err?.message ||
+          err?.message ??
           "Unable to analyze incident."
         );
 
-      } finally {
+      }
+
+      finally {
 
         setLoading(false);
 
@@ -93,7 +120,7 @@ export default function AnalysisPage() {
 
       <EmptyState
         title="No Incident Selected"
-        description="Please select an incident."
+        description="Open an incident first."
       />
 
     );
@@ -106,14 +133,15 @@ export default function AnalysisPage() {
 
   }
 
-  if (!analysis || error) {
+  if (!analysis) {
 
     return (
 
       <EmptyState
-        title="Analysis Failed"
+        title="Analysis Not Available"
         description={
-          error || "No analysis available."
+          error ||
+          "No analysis found."
         }
       />
 
@@ -163,9 +191,12 @@ export default function AnalysisPage() {
         <div className="xl:col-span-4">
 
           <ApprovalPanel
-            approval={analysis.approval}
+            approval={
+              analysis.approval
+            }
             confidence={
-              analysis.analysis.confidence
+              analysis.analysis
+                .confidence
             }
           />
 

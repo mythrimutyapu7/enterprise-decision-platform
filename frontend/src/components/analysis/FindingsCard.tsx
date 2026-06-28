@@ -14,57 +14,54 @@ export default function FindingsCard({
   missing,
 }: Props) {
 
+  const topFindings = findings?.slice(0, 5) ?? [];
+  const topMissing = missing?.slice(0, 2) ?? [];
+
   return (
 
     <motion.div
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      className="h-full rounded-3xl border border-slate-700 bg-[#121826] p-6 shadow-xl"
+      className="rounded-2xl border border-slate-700 bg-[#121826] p-5 shadow-xl"
     >
 
-      {/* Header */}
+      <p className="text-[11px] uppercase tracking-[0.28em] text-blue-400">
 
-      <div className="mb-6">
+        AI FINDINGS
 
-        <p className="text-xs uppercase tracking-[0.3em] text-blue-400">
+      </p>
 
-          AI FINDINGS
+      <h2 className="mt-2 text-xl font-bold text-white">
 
-        </p>
+        Key Indicators
 
-        <h2 className="mt-2 text-2xl font-bold text-white">
-
-          Key Indicators
-
-        </h2>
-
-      </div>
+      </h2>
 
       {/* Findings */}
 
-      <div>
+      <div className="mt-5">
 
-        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-400">
+        <h3 className="mb-3 text-xs uppercase tracking-[0.2em] text-slate-500">
 
           Top Findings
 
         </h3>
 
-        <div className="space-y-3">
+        <div className="space-y-2">
 
-          {findings?.slice(0, 5).map((item, index) => (
+          {topFindings.map((item, index) => (
 
             <div
               key={index}
-              className="flex items-start gap-3 rounded-xl border border-slate-700 bg-slate-900 p-4"
+              className="flex items-start gap-3 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2"
             >
 
               <FiCheckCircle
-                className="mt-1 shrink-0 text-green-400"
-                size={18}
+                className="mt-0.5 shrink-0 text-green-400"
+                size={16}
               />
 
-              <p className="text-sm leading-6 text-slate-300">
+              <p className="text-sm text-slate-300 line-clamp-2">
 
                 {item}
 
@@ -76,33 +73,43 @@ export default function FindingsCard({
 
         </div>
 
+        {findings.length > 5 && (
+
+          <p className="mt-2 text-xs text-slate-500">
+
+            + {findings.length - 5} more findings in full report
+
+          </p>
+
+        )}
+
       </div>
 
-      {/* Missing Information */}
+      {/* Missing */}
 
-      <div className="mt-8">
+      <div className="mt-6">
 
-        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-400">
+        <h3 className="mb-3 text-xs uppercase tracking-[0.2em] text-slate-500">
 
           Missing Information
 
         </h3>
 
-        <div className="space-y-3">
+        <div className="space-y-2">
 
-          {missing?.slice(0, 3).map((item, index) => (
+          {topMissing.map((item, index) => (
 
             <div
               key={index}
-              className="flex items-start gap-3 rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4"
+              className="flex items-start gap-3 rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-3 py-2"
             >
 
               <FiAlertCircle
-                className="mt-1 shrink-0 text-yellow-400"
-                size={18}
+                className="mt-0.5 shrink-0 text-yellow-400"
+                size={16}
               />
 
-              <p className="text-sm leading-6 text-slate-300">
+              <p className="text-sm text-slate-300 line-clamp-2">
 
                 {item}
 
@@ -113,6 +120,16 @@ export default function FindingsCard({
           ))}
 
         </div>
+
+        {missing.length > 2 && (
+
+          <p className="mt-2 text-xs text-slate-500">
+
+            + {missing.length - 2} more items in full report
+
+          </p>
+
+        )}
 
       </div>
 
