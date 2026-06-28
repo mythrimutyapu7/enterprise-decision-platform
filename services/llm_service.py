@@ -136,5 +136,5 @@ Return this exact structure:
   }}
 }}
 """
-
+        logger.success("✅ SINGLE GEMINI CALL")
         return self.generate_json(prompt)

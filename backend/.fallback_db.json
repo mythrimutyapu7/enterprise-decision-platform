@@ -44,6 +44,15 @@
       "created_by": "Microsoft Sentinel (Automated SIEM)",
       "created_at": "2026-06-28 10:37:14.646935",
       "_id": "6a40f95a7f548ac6b72a3fa7"
+    },
+    {
+      "title": "Anomalous Off-Hours Source Code Download",
+      "description": "Data Loss Prevention alert for user account: dev-ops-mitch (Senior DevOps Engineer).\n\nDetection details:\n- User logged in via corporate VPN at 2:14 AM on Sunday from a residential IP address.\n- Initiated a bulk clone and download of 14 private enterprise repositories containing proprietary microservice source code.\n- Total data transferred: 52.4 GB. \n- Historical behavioral baseline for this user is less than 1.5 GB of daily network traffic during standard operational hours (9 AM - 6 PM).",
+      "severity": "low",
+      "status": "open",
+      "created_by": "GitGuard / DLP Agent",
+      "created_at": "2026-06-28 10:55:10.687025",
+      "_id": "6a40fd8e8d81e79fa460edc4"
     }
   ]
 }
