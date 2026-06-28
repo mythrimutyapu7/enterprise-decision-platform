@@ -18,3 +18,8 @@ export const register = async (payload: RegisterRequest) => {
   const response = await api.post('/auth/register', payload);
   return response.data;
 };
+
+export const updateProfile = async (name: string) => {
+  const response = await api.put('/auth/profile', { name });
+  return response.data;
+};

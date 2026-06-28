@@ -104,3 +104,30 @@ async def login_user(user):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)
         )
+
+
+# -----------------------------
+# Update User Profile
+# -----------------------------
+async def update_user_profile(email: str, name: str):
+    try:
+        await users_collection.update_one(
+            {"email": email},
+            {"$set": {"name": name}}
+        )
+        updated_user = await users_collection.find_one({"email": email})
+        if not updated_user:
+            return {"success": False, "message": "User not found"}
+            
+        return {
+            "success": True,
+            "message": "Profile updated successfully",
+            "user": {
+                "id": str(updated_user["_id"]),
+                "name": updated_user["name"],
+                "email": updated_user["email"],
+                "role": updated_user["role"]
+            }
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}

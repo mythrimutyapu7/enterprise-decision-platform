@@ -1,8 +1,11 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Card from '../components/common/Card';
-import { FiBookOpen, FiPlay, FiSettings } from 'react-icons/fi';
+import { FiBookOpen, FiPlay, FiCheckCircle } from 'react-icons/fi';
 
 const PlaybooksPage = () => {
+  const [notification, setNotification] = useState<string | null>(null);
+
   const playbooks = [
     { name: 'Brute Force Attack Playbook', description: 'Triggered when multiple failed login attempts are detected. Disables compromise accounts and resets credentials.', triggers: 24, status: 'Active' },
     { name: 'Phishing Email Remediation', description: 'Triggered upon user reporting phishing threat. Scans inbox for similar subjects and quarantines emails.', triggers: 12, status: 'Active' },
@@ -10,8 +13,31 @@ const PlaybooksPage = () => {
     { name: 'Exfiltration Data Defense', description: 'Restricts external network upload requests for high-privilege users exceeding standard thresholds.', triggers: 3, status: 'Testing' }
   ];
 
+  const handleRunPlaybook = (name: string) => {
+    setNotification(`Successfully executed playbook: "${name}". Response actions initiated.`);
+    setTimeout(() => {
+      setNotification(null);
+    }, 4000);
+  };
+
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="space-y-6">
+      
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-6 right-6 z-50 rounded-2xl border border-green-500/30 bg-green-500/10 p-4 text-green-300 shadow-[0_0_30px_rgba(34,197,94,0.15)] flex items-center gap-3 backdrop-blur-md"
+          >
+            <FiCheckCircle className="h-5 w-5 text-green-400" />
+            <span className="text-sm font-semibold">{notification}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div>
         <p className="eyebrow">Automation Controls</p>
         <h1 className="mt-2 text-3xl font-semibold text-text">Security Playbooks</h1>
@@ -36,7 +62,10 @@ const PlaybooksPage = () => {
               <p className="mt-2 text-sm text-slate-400 leading-6">{p.description}</p>
               <div className="mt-5 flex items-center justify-between border-t border-white/5 pt-4 text-xs text-slate-500 uppercase tracking-widest">
                 <span>Triggers: {p.triggers} times</span>
-                <button className="glass-button py-2 px-4 gap-2 text-xs">
+                <button 
+                  onClick={() => handleRunPlaybook(p.name)}
+                  className="glass-button py-2 px-4 gap-2 text-xs font-bold"
+                >
                   <FiPlay className="h-3 w-3" /> Run Playbook
                 </button>
               </div>

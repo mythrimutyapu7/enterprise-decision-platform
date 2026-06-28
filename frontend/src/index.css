@@ -179,3 +179,86 @@ button, input, select, textarea {
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 24px 70px rgba(0,0,0,0.22);
   }
 }
+
+body.light-theme {
+  background: #F8FAFC !important;
+  background-image: none !important;
+  color: #0F172A !important;
+}
+
+body.light-theme::before,
+body.light-theme::after {
+  display: none !important;
+}
+
+body.light-theme .glass-card,
+body.light-theme .premium-panel {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  color: #0F172A !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.light-theme .glass-card h1,
+body.light-theme .glass-card h2,
+body.light-theme .glass-card h3,
+body.light-theme .glass-card p,
+body.light-theme .glass-card span,
+body.light-theme .premium-panel p,
+body.light-theme .premium-panel span {
+  color: #1E293B !important;
+}
+
+body.light-theme h1,
+body.light-theme h2,
+body.light-theme h3,
+body.light-theme h4,
+body.light-theme p,
+body.light-theme span:not(.text-slate-300):not(.text-slate-400):not(.text-slate-500) {
+  color: #0F172A !important;
+}
+
+body.light-theme input.glass-field,
+body.light-theme select.glass-field,
+body.light-theme textarea.glass-field {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+  color: #0F172A !important;
+}
+
+body.light-theme input.glass-field::placeholder,
+body.light-theme textarea.glass-field::placeholder {
+  color: #94A3B8 !important;
+}
+
+body.light-theme select.glass-field option {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+}
+
+body.light-theme .glass-button {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+  color: #0F172A !important;
+}
+
+body.light-theme .glass-button:hover {
+  background: rgba(15, 23, 42, 0.08) !important;
+}
+
+body.light-theme .eyebrow {
+  color: #64748B !important;
+}
+
+body.light-theme .text-slate-300,
+body.light-theme .text-slate-400,
+body.light-theme .text-slate-500,
+body.light-theme .text-muted {
+  color: #475569 !important;
+}
+
+body.light-theme aside.glass-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-right: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+

@@ -63,11 +63,16 @@ const IncidentListPage = () => {
     loadIncidents();
   }, []);
 
+  const getSeverity = (incident: any) => {
+    return (incident.analysis?.analysis?.risk_level || incident.severity || 'low').toLowerCase();
+  };
+
   const getRiskScore = (incident: any) => {
     if (incident.analysis?.analysis?.risk_score) {
       return Number(incident.analysis.analysis.risk_score);
     }
-    switch (incident.severity) {
+    const s = getSeverity(incident);
+    switch (s) {
       case 'critical': return 90;
       case 'high': return 75;
       case 'medium': return 50;
@@ -116,7 +121,7 @@ const IncidentListPage = () => {
       const matchesSearch = [incident.title, incident.createdBy].some((field) => 
         (field || '').toLowerCase().includes(search.toLowerCase())
       );
-      const matchesSeverity = severityFilter === 'all' || incident.severity === severityFilter;
+      const matchesSeverity = severityFilter === 'all' || getSeverity(incident) === severityFilter;
       const matchesStatus = statusFilter === 'all' || incident.status === statusFilter;
       return matchesSearch && matchesSeverity && matchesStatus;
     });
@@ -130,10 +135,10 @@ const IncidentListPage = () => {
         return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       }
       if (sortBy === 'severity_desc') {
-        return (severityRank[b.severity] || 0) - (severityRank[a.severity] || 0);
+        return (severityRank[getSeverity(b)] || 0) - (severityRank[getSeverity(a)] || 0);
       }
       if (sortBy === 'severity_asc') {
-        return (severityRank[a.severity] || 0) - (severityRank[b.severity] || 0);
+        return (severityRank[getSeverity(a)] || 0) - (severityRank[getSeverity(b)] || 0);
       }
       if (sortBy === 'risk_desc') {
         return getRiskScore(b) - getRiskScore(a);
@@ -224,8 +229,6 @@ const IncidentListPage = () => {
             <option value="oldest">Sort: Oldest First</option>
             <option value="severity_desc">Sort: Severity (High to Low)</option>
             <option value="severity_asc">Sort: Severity (Low to High)</option>
-            <option value="risk_desc">Sort: Risk Score (High to Low)</option>
-            <option value="risk_asc">Sort: Risk Score (Low to High)</option>
           </select>
         </div>
       </Card>
@@ -241,6 +244,7 @@ const IncidentListPage = () => {
             const riskScore = getRiskScore(incident);
             const category = getIncidentCategory(incident);
             const displayId = formatIncidentId(incident.id, incident.createdAt);
+            const severity = getSeverity(incident);
 
             return (
               <motion.div
@@ -271,9 +275,9 @@ const IncidentListPage = () => {
                   bottom-0
                   w-1.5
                   ${
-                    incident.severity === 'critical' ? 'bg-red-500 shadow-[0_0_15px_#ef4444]' :
-                    incident.severity === 'high' ? 'bg-orange-500 shadow-[0_0_15px_#f59e0b]' :
-                    incident.severity === 'medium' ? 'bg-blue-500 shadow-[0_0_15px_#3b82f6]' :
+                    severity === 'critical' ? 'bg-red-500 shadow-[0_0_15px_#ef4444]' :
+                    severity === 'high' ? 'bg-orange-500 shadow-[0_0_15px_#f59e0b]' :
+                    severity === 'medium' ? 'bg-blue-500 shadow-[0_0_15px_#3b82f6]' :
                     'bg-green-500 shadow-[0_0_15px_#22c55e]'
                   }
                 `} />
@@ -288,12 +292,12 @@ const IncidentListPage = () => {
                       <span className="font-mono text-xs font-bold text-slate-500">{displayId}</span>
                       
                       <span className={`rounded-md border px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${
-                        incident.severity === 'critical' ? 'border-red-500/35 bg-red-500/10 text-red-300' :
-                        incident.severity === 'high' ? 'border-orange-500/35 bg-orange-500/10 text-orange-300' :
-                        incident.severity === 'medium' ? 'border-blue-500/35 bg-blue-500/10 text-blue-300' :
+                        severity === 'critical' ? 'border-red-500/35 bg-red-500/10 text-red-300' :
+                        severity === 'high' ? 'border-orange-500/35 bg-orange-500/10 text-orange-300' :
+                        severity === 'medium' ? 'border-blue-500/35 bg-blue-500/10 text-blue-300' :
                         'border-green-500/35 bg-green-500/10 text-green-300'
                       }`}>
-                        {severityLabels[incident.severity]}
+                        {severityLabels[severity]}
                       </span>
 
                       <span className={`rounded-md border px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${
@@ -328,23 +332,6 @@ const IncidentListPage = () => {
                     </div>
                   </div>
 
-                  {/* Middle Column Risk score meter */}
-                  <div className="flex items-center gap-3 shrink-0 lg:px-6 border-white/5 lg:border-l lg:border-r">
-                    <div className="text-right">
-                      <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Risk Score</p>
-                      <p className="text-2xl font-black text-white mt-0.5">{riskScore}</p>
-                    </div>
-                    <div className="w-24 h-2 rounded-full bg-white/5 overflow-hidden">
-                      <div 
-                        className={`h-full rounded-full ${
-                          riskScore >= 75 ? 'bg-gradient-to-r from-red-500 to-orange-500' :
-                          riskScore >= 45 ? 'bg-gradient-to-r from-orange-400 to-yellow-400' :
-                          'bg-gradient-to-r from-green-500 to-emerald-400'
-                        }`} 
-                        style={{ width: `${riskScore}%` }}
-                      />
-                    </div>
-                  </div>
 
                   {/* Right Column Action buttons */}
                   <div className="flex flex-wrap items-center gap-2 shrink-0">

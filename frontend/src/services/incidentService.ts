@@ -332,3 +332,17 @@ export const getRecommendation = async (
   return response.data.data;
 
 };
+
+export const downloadIncidentReport = async (id: string, title: string) => {
+  const response = await api.get(`/incidents/${id}/report`, {
+    responseType: 'blob'
+  });
+  const blob = new Blob([response.data], { type: 'application/pdf' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `${title.replace(/\s+/g, '_')}_Report.pdf`);
+  document.body.appendChild(link);
+  link.click();
+  link.parentNode?.removeChild(link);
+};

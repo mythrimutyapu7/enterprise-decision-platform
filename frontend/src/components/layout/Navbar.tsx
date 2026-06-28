@@ -1,14 +1,26 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FiBell, FiSearch, FiMoon, FiCalendar, FiChevronDown } from "react-icons/fi";
+import { FiBell, FiSearch, FiMoon, FiSun, FiCalendar, FiChevronDown } from "react-icons/fi";
 
 const Navbar = () => {
   const [currentDate, setCurrentDate] = useState("");
+  const [isLight, setIsLight] = useState(false);
 
   useEffect(() => {
     const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' };
     setCurrentDate(new Date().toLocaleDateString('en-US', options));
+    setIsLight(document.body.classList.contains("light-theme"));
   }, []);
+
+  const toggleTheme = () => {
+    const nextState = !isLight;
+    setIsLight(nextState);
+    if (nextState) {
+      document.body.classList.add("light-theme");
+    } else {
+      document.body.classList.remove("light-theme");
+    }
+  };
 
   return (
     <motion.header
@@ -57,14 +69,18 @@ const Navbar = () => {
         </button>
 
         {/* Theme Toggle */}
-        <button className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08] transition duration-300">
-          <FiMoon className="h-5 w-5" />
+        <button 
+          onClick={toggleTheme}
+          className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08] transition duration-300"
+          title="Toggle light/dark theme"
+        >
+          {isLight ? <FiSun className="h-5 w-5 text-amber-500" /> : <FiMoon className="h-5 w-5" />}
         </button>
 
         {/* Date Selector */}
         <div className="flex h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-slate-300 hover:bg-white/[0.08] cursor-pointer transition duration-300">
           <FiCalendar className="h-4 w-4 text-slate-400" />
-          <span>{currentDate || "27 Jun 2026"}</span>
+          <span>{currentDate || "28 Jun 2026"}</span>
           <FiChevronDown className="h-4 w-4 text-slate-500" />
         </div>
       </div>

@@ -91,6 +91,7 @@ async def analyze_incident(id: str):
         result["meta"]["analysis_completed_at"] = generated_at
         result["meta"]["recommendation_generated_at"] = generated_at
 
+        ai_severity = result.get("analysis", {}).get("risk_level", "low").lower()
         await incidents_collection.update_one(
 
             {
@@ -99,7 +100,8 @@ async def analyze_incident(id: str):
 
             {
                 "$set": {
-                    "analysis": result
+                    "analysis": result,
+                    "severity": ai_severity
                 }
             }
 
@@ -152,6 +154,7 @@ async def reanalyze_incident(id: str):
         result["meta"]["analysis_completed_at"] = generated_at
         result["meta"]["recommendation_generated_at"] = generated_at
 
+        ai_severity = result.get("analysis", {}).get("risk_level", "low").lower()
         await incidents_collection.update_one(
 
             {
@@ -160,7 +163,8 @@ async def reanalyze_incident(id: str):
 
             {
                 "$set": {
-                    "analysis": result
+                    "analysis": result,
+                    "severity": ai_severity
                 }
             }
 

@@ -68,7 +68,8 @@ const DashboardPage = () => {
     if (incident.analysis?.analysis?.risk_score) {
       return Number(incident.analysis.analysis.risk_score);
     }
-    switch (incident.severity) {
+    const s = (incident.analysis?.analysis?.risk_level || incident.severity)?.toLowerCase();
+    switch (s) {
       case 'critical': return 90;
       case 'high': return 75;
       case 'medium': return 50;
@@ -101,7 +102,10 @@ const DashboardPage = () => {
   const stats = useMemo(() => {
     const total = incidents.length;
     const open = incidents.filter(i => i.status === 'open' || i.status === 'in_progress').length;
-    const high = incidents.filter(i => i.severity === 'high' || i.severity === 'critical').length;
+    const high = incidents.filter(i => {
+      const s = (i.analysis?.analysis?.risk_level || i.severity)?.toLowerCase();
+      return s === 'high' || s === 'critical';
+    }).length;
     const resolved = incidents.filter(i => i.status === 'resolved' || i.status === 'closed').length;
     
     const totalRisk = incidents.reduce((sum, i) => sum + getRiskScore(i), 0);
@@ -121,7 +125,7 @@ const DashboardPage = () => {
   const severityCounts = useMemo(() => {
     const counts: Record<string, number> = { critical: 0, high: 0, medium: 0, low: 0 };
     incidents.forEach(i => {
-      const s = i.severity?.toLowerCase();
+      const s = (i.analysis?.analysis?.risk_level || i.severity)?.toLowerCase();
       if (s === 'critical' || s === 'high' || s === 'medium' || s === 'low') {
         counts[s]++;
       }
@@ -219,8 +223,9 @@ const DashboardPage = () => {
     sorted.forEach((inc, idx) => {
       const incId = formatIncidentId(inc.id, inc.createdAt);
       const timeLabel = formatDateTime(inc.createdAt);
+      const s = (inc.analysis?.analysis?.risk_level || inc.severity)?.toLowerCase();
 
-      if (inc.severity === 'critical' || inc.severity === 'high') {
+      if (s === 'critical' || s === 'high') {
         list.push({
           type: 'severity',
           title: 'High severity incident detected',
@@ -379,6 +384,7 @@ const DashboardPage = () => {
                   <tbody>
                     {recentIncidents.map((incident) => {
                       const riskScore = getRiskScore(incident);
+                      const displaySeverity = (incident.analysis?.analysis?.risk_level || incident.severity)?.toLowerCase();
                       return (
                         <tr key={incident.id} className="border-b border-white/5 hover:bg-white/[0.015] transition duration-200">
                           <td className="py-4 font-mono font-bold text-slate-400">
@@ -389,12 +395,12 @@ const DashboardPage = () => {
                           </td>
                           <td className="py-4">
                             <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                              incident.severity === 'critical' ? 'border-red-500/35 bg-red-500/10 text-red-300' :
-                              incident.severity === 'high' ? 'border-orange-500/35 bg-orange-500/10 text-orange-300' :
-                              incident.severity === 'medium' ? 'border-blue-500/35 bg-blue-500/10 text-blue-300' :
+                              displaySeverity === 'critical' ? 'border-red-500/35 bg-red-500/10 text-red-300' :
+                              displaySeverity === 'high' ? 'border-orange-500/35 bg-orange-500/10 text-orange-300' :
+                              displaySeverity === 'medium' ? 'border-blue-500/35 bg-blue-500/10 text-blue-300' :
                               'border-green-500/35 bg-green-500/10 text-green-300'
                             }`}>
-                              {incident.severity}
+                              {displaySeverity}
                             </span>
                           </td>
                           <td className="py-4">
@@ -645,32 +651,6 @@ const DashboardPage = () => {
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-
-          {/* Alerts & Notifications Panel */}
-          <div className="rounded-[24px] border border-white/10 bg-[#0B1120] p-6 shadow-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-white">Alerts & Notifications</h2>
-              <button onClick={() => navigate('/incidents')} className="text-xs uppercase tracking-widest text-[#4f8cff] hover:text-blue-300 font-bold">
-                View All
-              </button>
-            </div>
-
-            {/* List */}
-            <div className="space-y-3 mt-5">
-              {alerts.map((al, idx) => (
-                <div key={idx} className={`flex items-start gap-3 rounded-2xl border p-4 ${al.bgColor} transition duration-300 hover:scale-[1.01]`}>
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/5 border border-white/5">
-                    {al.icon}
-                  </span>
-                  <div className="space-y-1 min-w-0">
-                    <p className="text-xs font-bold text-white leading-tight">{al.title}</p>
-                    <p className="text-[11px] text-slate-400 leading-normal truncate">{al.message}</p>
-                    <p className="text-[9px] text-slate-500 font-medium uppercase tracking-wide pt-1">{al.time}</p>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
 
