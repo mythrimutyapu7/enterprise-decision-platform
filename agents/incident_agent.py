@@ -1,35 +1,32 @@
 from agents.base_agent import BaseAgent
-from services.llm_service import LLMService
-from shared.utils import load_prompt
 
 
 class IncidentAgent(BaseAgent):
 
     def __init__(self):
         super().__init__("Incident Agent")
-        self.llm = LLMService()
 
     def run(self, state):
 
         self.log_start()
 
-        prompt = load_prompt("incident_prompt.txt")
+        # Read the shared Gemini response
+        result = state.shared_analysis.get("incident", {})
 
-        full_prompt = f"""
-{prompt}
+        state.incident.summary = result.get(
+            "summary",
+            state.incident.summary,
+        )
 
-Incident Title:
-{state.incident.title}
+        state.incident.incident_type = result.get(
+            "incident_type",
+            state.incident.incident_type,
+        )
 
-Incident Description:
-{state.incident.description}
-"""
-
-        result = self.llm.generate_json(full_prompt)
-
-        state.incident.summary = result["summary"]
-        state.incident.incident_type = result["incident_type"]
-        state.incident.severity = result["severity"]
+        state.incident.severity = result.get(
+            "severity",
+            state.incident.severity,
+        )
 
         self.log_finish()
 
