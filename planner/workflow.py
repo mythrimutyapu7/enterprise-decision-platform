@@ -4,13 +4,20 @@ from agents.history_agent import HistoryAgent
 from agents.risk_agent import RiskAgent
 from agents.recommendation_agent import RecommendationAgent
 
+from services.llm_service import LLMService
+
 
 class SecurityWorkflow:
     """
-    Executes the Security Incident Response workflow.
+    Executes the complete Security Incident Response workflow.
+
+    Gemini is called ONLY ONCE.
+    Every agent reads from the shared response.
     """
 
     def __init__(self):
+
+        self.llm = LLMService()
 
         self.incident_agent = IncidentAgent()
 
@@ -23,6 +30,18 @@ class SecurityWorkflow:
         self.recommendation_agent = RecommendationAgent()
 
     def run(self, state):
+
+        # ======================================
+        # ONE Gemini Call
+        # ======================================
+
+        state.shared_analysis = self.llm.generate_complete_analysis(
+            state.incident
+        )
+
+        # ======================================
+        # Agents now read shared_analysis
+        # ======================================
 
         state = self.incident_agent.run(state)
 
