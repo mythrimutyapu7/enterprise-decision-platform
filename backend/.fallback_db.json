@@ -35,6 +35,15 @@
       "created_by": "Manju",
       "created_at": "2026-06-28 10:10:23.530412",
       "_id": "6a40f30f3317e6827a1a632e"
+    },
+    {
+      "title": "Malicious C2 Communication & Rapid File Modification",
+      "description": "SIEM Alert ID: 98421. Critical alert triggered on host endpoint 10.0.4.23. \n\nDetection details:\n- System observed initiating outbound connections to known malicious C2 IP address: 185.220.101.5.\n- Within 90 seconds of connection, host system EDR logged 450+ rapid file modification alerts (Bulk extension renames to .locked).\n- Target machine is listed in Asset Registry as 'prod-db-01', hosting core customer PII databases.",
+      "severity": "low",
+      "status": "open",
+      "created_by": "Microsoft Sentinel (Automated SIEM)",
+      "created_at": "2026-06-28 10:37:14.646935",
+      "_id": "6a40f95a7f548ac6b72a3fa7"
     }
   ]
 }

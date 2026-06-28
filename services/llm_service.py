@@ -44,10 +44,8 @@ class LLMService:
                     contents=prompt,
                 )
 
-                text = response.text.strip()
-
                 text = (
-                    text
+                    response.text
                     .replace("```json", "")
                     .replace("```", "")
                     .strip()
@@ -65,3 +63,78 @@ class LLMService:
                     raise
 
                 time.sleep(2)
+
+    # =====================================================
+    # NEW : ONE Gemini call for the entire workflow
+    # =====================================================
+
+    def generate_complete_analysis(self, incident):
+
+        prompt = f"""
+You are a Senior Enterprise SOC AI.
+
+Analyze the following incident.
+
+TITLE:
+{incident.title}
+
+DESCRIPTION:
+{incident.description}
+
+SOURCE:
+{incident.source}
+
+Return ONLY valid JSON.
+
+DO NOT explain.
+
+DO NOT use markdown.
+
+Return this exact structure:
+
+{{
+  "incident": {{
+    "summary": "",
+    "incident_type": "",
+    "severity": ""
+  }},
+
+  "context": {{
+    "security_policies": [],
+    "incident_playbooks": [],
+    "organizational_notes": [],
+    "threat_intelligence": []
+  }},
+
+  "analysis": {{
+    "risk_score": 0,
+    "risk_level": "",
+    "confidence": 0,
+    "indicators": [],
+    "risks": [],
+    "missing_information": [],
+    "opportunities": []
+  }},
+
+  "recommendation": {{
+    "recommended_action": "",
+    "action_priority": "",
+    "business_impact": "",
+    "reasoning": [],
+    "supporting_evidence": [],
+    "alternative_actions": [],
+    "follow_up_actions": [],
+    "confidence": 0
+  }},
+
+  "approval": {{
+    "approved": false,
+    "execution_status": "Pending Analyst Review",
+    "approved_by": "",
+    "approval_timestamp": "",
+    "reviewer_comments": ""
+  }}
+}}
+"""
+
+        return self.generate_json(prompt)
