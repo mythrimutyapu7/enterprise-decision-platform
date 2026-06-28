@@ -1,6 +1,55 @@
+from bson import ObjectId
+
 from planner.engine import run_ai_analysis
+
+from backend.database.mongodb import database
 from backend.services.incident_service import get_incident_by_id
 
+incidents_collection = database["incidents"]
+
+
+# =====================================================
+# Get Saved Analysis
+# =====================================================
+
+async def get_saved_analysis(id: str):
+
+    try:
+
+        incident = await incidents_collection.find_one(
+            {"_id": ObjectId(id)}
+        )
+
+        if not incident:
+
+            return {
+                "success": False,
+                "message": "Incident not found"
+            }
+
+        if not incident.get("analysis"):
+
+            return {
+                "success": False,
+                "message": "Analysis not found"
+            }
+
+        return {
+            "success": True,
+            "analysis": incident["analysis"]
+        }
+
+    except Exception as e:
+
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+
+# =====================================================
+# Analyze Incident
+# =====================================================
 
 async def analyze_incident(id: str):
 
@@ -11,24 +60,110 @@ async def analyze_incident(id: str):
 
     incident = incident_response["data"]
 
-    ai_input = {
-        "incident_id": 1,   # we'll improve this later
-        "title": incident["title"],
-        "description": incident["description"],
-        "severity": incident["severity"],
-        "source": "Microsoft Sentinel"
-    }
-    try:
-        result = run_ai_analysis(ai_input)
+    # Already analyzed
+
+    if incident.get("analysis"):
 
         return {
             "success": True,
-            "analysis": result
+            "analysis": incident["analysis"],
+            "cached": True
+        }
+
+    ai_input = {
+        "incident_id": 1,
+        "title": incident["title"],
+        "description": incident["description"],
+        "severity": incident["severity"],
+        "source": incident.get(
+            "created_by",
+            "Microsoft Sentinel"
+        )
+    }
+
+    try:
+
+        result = run_ai_analysis(ai_input)
+
+        await incidents_collection.update_one(
+
+            {
+                "_id": ObjectId(id)
+            },
+
+            {
+                "$set": {
+                    "analysis": result
+                }
+            }
+
+        )
+
+        return {
+            "success": True,
+            "analysis": result,
+            "cached": False
         }
 
     except Exception as e:
-        # Return structured error instead of allowing an uncaught exception
+
         return {
             "success": False,
-            "error": f"AI analysis failed: {str(e)}"
+            "error": str(e)
+        }
+
+
+# =====================================================
+# Force Re-analysis
+# =====================================================
+
+async def reanalyze_incident(id: str):
+
+    incident_response = await get_incident_by_id(id)
+
+    if not incident_response["success"]:
+        return incident_response
+
+    incident = incident_response["data"]
+
+    ai_input = {
+        "incident_id": 1,
+        "title": incident["title"],
+        "description": incident["description"],
+        "severity": incident["severity"],
+        "source": incident.get(
+            "created_by",
+            "Microsoft Sentinel"
+        )
+    }
+
+    try:
+
+        result = run_ai_analysis(ai_input)
+
+        await incidents_collection.update_one(
+
+            {
+                "_id": ObjectId(id)
+            },
+
+            {
+                "$set": {
+                    "analysis": result
+                }
+            }
+
+        )
+
+        return {
+            "success": True,
+            "analysis": result,
+            "cached": False
+        }
+
+    except Exception as e:
+
+        return {
+            "success": False,
+            "error": str(e)
         }

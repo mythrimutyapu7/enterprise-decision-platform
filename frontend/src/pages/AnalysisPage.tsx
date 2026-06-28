@@ -5,7 +5,11 @@ import { useSearchParams } from "react-router-dom";
 import Loader from "../components/common/Loader";
 import EmptyState from "../components/common/EmptyState";
 
-import { analyzeIncident } from "../services/incidentService";
+import {
+  analyzeIncident,
+  getSavedAnalysis,
+} from "../services/incidentService";
+
 import { AnalysisResponse } from "../types/incident";
 
 import AnalysisHero from "../components/analysis/AnalysisHero";
@@ -35,13 +39,41 @@ export default function AnalysisPage() {
 
         setLoading(true);
 
-        const result = await analyzeIncident(incidentId);
+        setError("");
 
-        setAnalysis(result);
+        // ----------------------------------
+        // Try loading existing analysis
+        // ----------------------------------
 
-      } catch {
+        const saved = await getSavedAnalysis(
+          incidentId
+        );
 
-        setError("Unable to analyze incident.");
+        if (saved) {
+
+          setAnalysis(saved);
+
+          return;
+
+        }
+
+        // ----------------------------------
+        // No analysis yet → Run AI
+        // ----------------------------------
+
+        const generated =
+          await analyzeIncident(
+            incidentId
+          );
+
+        setAnalysis(generated);
+
+      } catch (err: any) {
+
+        setError(
+          err?.message ||
+          "Unable to analyze incident."
+        );
 
       } finally {
 
@@ -58,10 +90,12 @@ export default function AnalysisPage() {
   if (!incidentId) {
 
     return (
+
       <EmptyState
         title="No Incident Selected"
         description="Please select an incident."
       />
+
     );
 
   }
@@ -75,10 +109,14 @@ export default function AnalysisPage() {
   if (!analysis || error) {
 
     return (
+
       <EmptyState
         title="Analysis Failed"
-        description={error || "No analysis available"}
+        description={
+          error || "No analysis available."
+        }
       />
+
     );
 
   }
@@ -88,7 +126,7 @@ export default function AnalysisPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="space-y-6"
+      className="space-y-5"
     >
 
       <AnalysisHero
@@ -96,13 +134,18 @@ export default function AnalysisPage() {
         analysis={analysis.analysis}
       />
 
-      <div className="grid gap-6 xl:grid-cols-12">
+      <div className="grid gap-5 xl:grid-cols-12">
 
         <div className="xl:col-span-4">
 
           <FindingsCard
-            findings={analysis.analysis.indicators}
-            missing={analysis.analysis.missing_information}
+            findings={
+              analysis.analysis.indicators
+            }
+            missing={
+              analysis.analysis
+                .missing_information
+            }
           />
 
         </div>
@@ -110,7 +153,9 @@ export default function AnalysisPage() {
         <div className="xl:col-span-4">
 
           <ActionsCard
-            recommendation={analysis.recommendation}
+            recommendation={
+              analysis.recommendation
+            }
           />
 
         </div>
@@ -119,7 +164,9 @@ export default function AnalysisPage() {
 
           <ApprovalPanel
             approval={analysis.approval}
-            confidence={analysis.analysis.confidence}
+            confidence={
+              analysis.analysis.confidence
+            }
           />
 
         </div>

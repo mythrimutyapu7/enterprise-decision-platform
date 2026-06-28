@@ -25,67 +25,49 @@ export default function ApprovalPanel({
     <motion.div
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      className="h-full rounded-3xl border border-slate-700 bg-[#121826] p-6 shadow-xl flex flex-col"
+      className="rounded-2xl border border-slate-700 bg-[#121826] p-5 shadow-xl"
     >
 
-      {/* Header */}
+      <p className="text-[11px] uppercase tracking-[0.25em] text-blue-400">
+        REVIEW
+      </p>
 
-      <div>
+      <h2 className="mt-2 text-xl font-bold text-white">
+        Human Approval
+      </h2>
 
-        <p className="text-xs uppercase tracking-[0.3em] text-blue-400">
-
-          REVIEW
-
-        </p>
-
-        <h2 className="mt-2 text-2xl font-bold text-white">
-
-          Human Approval
-
-        </h2>
-
-      </div>
-
-      {/* Status */}
+      {/* STATUS */}
 
       <div
-        className={`mt-6 rounded-2xl border p-5 ${
+        className={`mt-5 rounded-xl p-4 ${
           approved
-            ? "border-green-500/30 bg-green-500/10"
-            : "border-yellow-500/30 bg-yellow-500/10"
+            ? "bg-green-500/10 border border-green-500/20"
+            : "bg-yellow-500/10 border border-yellow-500/20"
         }`}
       >
 
         <div className="flex items-center gap-3">
 
           {approved ? (
-
             <FiCheckCircle
               className="text-green-400"
-              size={24}
+              size={22}
             />
-
           ) : (
-
             <FiClock
               className="text-yellow-400"
-              size={24}
+              size={22}
             />
-
           )}
 
           <div>
 
-            <p className="text-xs uppercase tracking-wider text-slate-400">
-
+            <p className="text-xs text-slate-400">
               Status
-
             </p>
 
-            <h3 className="mt-1 text-lg font-semibold text-white">
-
+            <h3 className="font-semibold text-white">
               {approval.execution_status}
-
             </h3>
 
           </div>
@@ -94,107 +76,95 @@ export default function ApprovalPanel({
 
       </div>
 
-      {/* Analyst */}
+      {/* REVIEWER */}
 
-      <div className="mt-6 rounded-2xl border border-slate-700 bg-slate-900 p-4">
+      <div className="mt-4 flex items-center justify-between rounded-xl bg-slate-900 p-3">
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
 
           <FiUser className="text-blue-400" />
 
-          <div>
-
-            <p className="text-xs uppercase tracking-wider text-slate-400">
-
-              Assigned Reviewer
-
-            </p>
-
-            <p className="mt-2 text-white">
-
-              {approval.approved_by || "Security Analyst"}
-
-            </p>
-
-          </div>
+          <span className="text-sm text-slate-300">
+            {approval.approved_by || "Security Analyst"}
+          </span>
 
         </div>
 
       </div>
 
-      {/* AI Confidence */}
+      {/* CONFIDENCE */}
 
-      <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-900 p-4">
+      <div className="mt-4">
 
-        <div className="flex items-center justify-between">
+        <div className="mb-2 flex items-center justify-between">
 
           <div className="flex items-center gap-2">
 
             <FiActivity className="text-cyan-400" />
 
-            <span className="text-xs uppercase tracking-wider text-slate-400">
-
+            <span className="text-sm text-slate-400">
               AI Confidence
-
             </span>
 
           </div>
 
-          <span className="text-xl font-bold text-white">
-
+          <span className="font-bold text-white">
             {confidence}%
-
           </span>
 
         </div>
 
-        <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-700">
+        <div className="h-2 rounded-full bg-slate-700">
 
           <div
-            style={{ width: `${confidence}%` }}
             className="h-full rounded-full bg-cyan-400"
+            style={{
+              width: `${confidence}%`
+            }}
           />
 
         </div>
 
       </div>
 
-      {/* Buttons */}
+      {/* BUTTONS */}
 
-      <div className="mt-8 grid grid-cols-2 gap-3">
+      <div className="mt-5 grid grid-cols-2 gap-3">
 
         <button
-          className="flex items-center justify-center gap-2 rounded-xl bg-green-600 py-3 font-semibold text-white transition hover:bg-green-500"
+          className="rounded-xl bg-green-600 py-2.5 font-semibold text-white hover:bg-green-500"
         >
+          <div className="flex items-center justify-center gap-2">
 
-          <FiCheckCircle />
+            <FiCheckCircle />
 
-          Approve
+            Approve
 
+          </div>
         </button>
 
         <button
-          className="flex items-center justify-center gap-2 rounded-xl bg-red-600 py-3 font-semibold text-white transition hover:bg-red-500"
+          className="rounded-xl bg-red-600 py-2.5 font-semibold text-white hover:bg-red-500"
         >
+          <div className="flex items-center justify-center gap-2">
 
-          <FiXCircle />
+            <FiXCircle />
 
-          Reject
+            Reject
 
+          </div>
         </button>
 
       </div>
 
-      {/* Download */}
+      {/* DOWNLOAD */}
 
       <button
-        className="mt-auto flex items-center justify-center gap-3 rounded-2xl border border-slate-700 py-4 text-slate-300 transition hover:bg-slate-800"
+        className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 py-3 text-sm text-slate-300 transition hover:bg-slate-800"
       >
-
         <FiDownload />
 
-        Download Investigation Report
-
+        Full Investigation Report
       </button>
 
     </motion.div>
