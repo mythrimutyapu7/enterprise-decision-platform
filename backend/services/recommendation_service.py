@@ -1,59 +1,160 @@
-from backend.database.mongodb import database
+from datetime import datetime
+
 from bson import ObjectId
 
-recommendations_collection = database["recommendations"]
+from backend.database.mongodb import database
 
+incidents_collection = database["incidents"]
+
+
+# =====================================================
+# Get Recommendation
+# =====================================================
 
 async def get_recommendation(id: str):
+
     try:
-        recommendation = await recommendations_collection.find_one(
+
+        incident = await incidents_collection.find_one(
             {"_id": ObjectId(id)}
         )
 
-        if not recommendation:
+        if not incident:
+
             return {
                 "success": False,
-                "message": "Recommendation not found"
+                "message": "Incident not found"
             }
 
-        recommendation["_id"] = str(recommendation["_id"])
+        analysis = incident.get("analysis")
+
+        if not analysis:
+
+            return {
+                "success": False,
+                "message": "No analysis available"
+            }
 
         return {
             "success": True,
-            "data": recommendation
+            "data": analysis.get("recommendation", {})
         }
 
     except Exception as e:
+
         return {
             "success": False,
             "error": str(e)
         }
 
+
+# =====================================================
+# Approve Recommendation
+# =====================================================
 
 async def approve_recommendation(id: str):
+
     try:
-        result = await recommendations_collection.update_one(
-            {"_id": ObjectId(id)},
+
+        analyst = "Security Analyst"
+
+        await incidents_collection.update_one(
+
+            {
+                "_id": ObjectId(id)
+            },
+
             {
                 "$set": {
-                    "approved": True
+
+                    "analysis.approval.approved": True,
+
+                    "analysis.approval.execution_status": "Approved",
+
+                    "analysis.approval.approved_by": analyst,
+
+                    "analysis.approval.approval_timestamp": datetime.utcnow().isoformat()
+
                 }
+
             }
+
         )
 
-        if result.modified_count == 0:
-            return {
-                "success": False,
-                "message": "Recommendation not found"
-            }
+        incident = await incidents_collection.find_one(
+            {"_id": ObjectId(id)}
+        )
 
         return {
+
             "success": True,
-            "message": "Recommendation Approved Successfully"
+
+            "approval": incident["analysis"]["approval"]
+
         }
 
     except Exception as e:
+
         return {
+
             "success": False,
+
             "error": str(e)
+
+        }
+
+
+# =====================================================
+# Reject Recommendation
+# =====================================================
+
+async def reject_recommendation(id: str):
+
+    try:
+
+        analyst = "Security Analyst"
+
+        await incidents_collection.update_one(
+
+            {
+                "_id": ObjectId(id)
+            },
+
+            {
+                "$set": {
+
+                    "analysis.approval.approved": False,
+
+                    "analysis.approval.execution_status": "Rejected",
+
+                    "analysis.approval.approved_by": analyst,
+
+                    "analysis.approval.approval_timestamp": datetime.utcnow().isoformat()
+
+                }
+
+            }
+
+        )
+
+        incident = await incidents_collection.find_one(
+            {"_id": ObjectId(id)}
+        )
+
+        return {
+
+            "success": True,
+
+            "approval": incident["analysis"]["approval"]
+
+        }
+
+    except Exception as e:
+
+        return {
+
+            "success": False,
+
+            "error": str(e)
+
         }

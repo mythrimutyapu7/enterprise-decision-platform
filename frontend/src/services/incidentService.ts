@@ -91,6 +91,7 @@ const normalizeIncident = (
 export const fetchIncidents = async (): Promise<
   IncidentSummary[]
 > => {
+
   const response = await api.get<
     IncidentSummary[] | BackendListResponse
   >("/incidents/");
@@ -100,11 +101,13 @@ export const fetchIncidents = async (): Promise<
     : response.data.data || [];
 
   return incidents.map(normalizeIncident);
+
 };
 
 export const fetchIncidentById = async (
   id: string
 ): Promise<IncidentDetail> => {
+
   const response = await api.get<
     IncidentDetail | BackendDetailResponse
   >(`/incidents/${id}`);
@@ -115,11 +118,13 @@ export const fetchIncidentById = async (
       : (response.data as BackendIncident);
 
   return normalizeIncident(incident);
+
 };
 
 export const createIncident = async (
   payload: CreateIncidentRequest
 ) => {
+
   const response = await api.post("/incidents/", {
     title: payload.title,
     description: payload.description,
@@ -129,16 +134,19 @@ export const createIncident = async (
   });
 
   return response.data;
+
 };
 
 export const deleteIncident = async (
   id: string
 ) => {
+
   const response = await api.delete(
     `/incidents/${id}`
   );
 
   return response.data;
+
 };
 
 // ======================================
@@ -148,7 +156,9 @@ export const deleteIncident = async (
 export const getSavedAnalysis = async (
   id: string
 ): Promise<AnalysisResponse | null> => {
+
   try {
+
     const response = await api.get(
       `/incidents/${id}/analysis`
     );
@@ -158,9 +168,13 @@ export const getSavedAnalysis = async (
     }
 
     return response.data.analysis;
+
   } catch {
+
     return null;
+
   }
+
 };
 
 // ======================================
@@ -170,17 +184,21 @@ export const getSavedAnalysis = async (
 export const analyzeIncident = async (
   id: string
 ): Promise<AnalysisResponse> => {
+
   const response = await api.post(
     `/incidents/${id}/analyze`
   );
 
   if (!response.data.success) {
+
     throw new Error(
       response.data.error || "Analysis failed"
     );
+
   }
 
   return response.data.analysis;
+
 };
 
 // ======================================
@@ -190,15 +208,73 @@ export const analyzeIncident = async (
 export const reAnalyzeIncident = async (
   id: string
 ): Promise<AnalysisResponse> => {
+
   const response = await api.post(
     `/incidents/${id}/reanalyze`
   );
 
   if (!response.data.success) {
+
     throw new Error(
       response.data.error || "Analysis failed"
     );
+
   }
 
   return response.data.analysis;
+
+};
+
+// ======================================
+// Approve Recommendation
+// ======================================
+
+export const approveRecommendation = async (
+  id: string
+) => {
+
+  const response = await api.post(
+    `/recommendations/${id}/approve`
+  );
+
+  return response.data;
+
+};
+
+// ======================================
+// Reject Recommendation
+// ======================================
+
+export const rejectRecommendation = async (
+  id: string
+) => {
+
+  const response = await api.post(
+    `/recommendations/${id}/reject`
+  );
+
+  return response.data;
+
+};
+
+// ======================================
+// Get Recommendation
+// ======================================
+
+export const getRecommendation = async (
+  id: string
+) => {
+
+  const response = await api.get(
+    `/recommendations/${id}`
+  );
+
+  if (!response.data.success) {
+
+    return null;
+
+  }
+
+  return response.data.data;
+
 };
