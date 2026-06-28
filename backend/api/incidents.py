@@ -8,6 +8,7 @@ from backend.services.incident_service import (
     get_incident_by_id,
     delete_incident,
     update_analyst_notes,
+    update_incident_status,
 )
 
 
@@ -19,6 +20,11 @@ router = APIRouter(
 
 class AnalystNotesUpdate(BaseModel):
     notes: str = ""
+
+
+class StatusUpdate(BaseModel):
+    status: str
+
 
 @router.post("/")
 async def create(
@@ -48,3 +54,8 @@ async def delete(id: str, incident=Depends(check_incident_access)):
 @router.put("/{id}/notes")
 async def update_notes(id: str, payload: AnalystNotesUpdate, incident=Depends(check_incident_access)):
     return await update_analyst_notes(id, payload.notes)
+
+
+@router.put("/{id}/status")
+async def update_status(id: str, payload: StatusUpdate, incident=Depends(check_incident_access)):
+    return await update_incident_status(id, payload.status)

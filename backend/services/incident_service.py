@@ -105,6 +105,31 @@ async def update_analyst_notes(id, notes):
 
 
 # --------------------------------------------------
+# Update Incident Status
+# --------------------------------------------------
+
+async def update_incident_status(id, status):
+    try:
+        await incidents_collection.update_one(
+            {"_id": ObjectId(id)},
+            {
+                "$set": {
+                    "status": status
+                }
+            }
+        )
+        return {
+            "success": True,
+            "message": "Status updated successfully"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+
+# --------------------------------------------------
 # Get All Incidents
 # --------------------------------------------------
 

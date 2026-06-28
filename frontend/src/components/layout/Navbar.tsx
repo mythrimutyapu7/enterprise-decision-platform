@@ -1,33 +1,13 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  FiBell,
-  FiSearch,
-  FiCommand,
-  FiCircle,
-} from "react-icons/fi";
+import { FiBell, FiSearch, FiMoon, FiCalendar, FiChevronDown } from "react-icons/fi";
 
 const Navbar = () => {
-  const [time, setTime] = useState(new Date());
-  const user = JSON.parse(
-  localStorage.getItem("currentUser") || "{}"
-);
-
-const initials =
-  user?.name
-    ?.split(" ")
-    .map((word: string) => word[0])
-    .join("")
-    .substring(0, 2)
-    .toUpperCase() || "U";
+  const [currentDate, setCurrentDate] = useState("");
 
   useEffect(() => {
-    const timer = window.setInterval(
-      () => setTime(new Date()),
-      1000
-    );
-
-    return () => window.clearInterval(timer);
+    const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' };
+    setCurrentDate(new Date().toLocaleDateString('en-US', options));
   }, []);
 
   return (
@@ -39,135 +19,55 @@ const initials =
         ease: "easeOut",
       }}
       className="
-        sticky
-        top-4
         z-30
         mb-6
-        glass-card
-        px-5
+        flex
+        flex-col
+        items-center
+        justify-between
+        gap-4
+        rounded-3xl
+        border
+        border-white/10
+        bg-white/[0.03]
+        px-6
         py-4
         shadow-[0_38px_90px_rgba(0,0,0,0.24)]
+        backdrop-blur-md
+        sm:flex-row
       "
     >
-      {/* TOP */}
-
-      <div className="flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
-
-        <div className="min-w-0">
-
-          <p className="eyebrow">
-            Command Center
-          </p>
-
-          <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">
-            AI SOC Operations
-          </h2>
-
-          <p className="mt-1 text-sm leading-6 text-slate-300">
-            Live status, agent telemetry, and intelligent incident controls.
-          </p>
-
-        </div>
-
-        <div className="grid min-w-0 gap-3 sm:flex sm:items-center">
-
-          <div className="glass-input flex min-w-0 items-center gap-3 sm:w-72">
-
-            <FiSearch className="h-4 w-4 text-slate-300" />
-
-            <input
-              className="w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
-              placeholder="Search commands"
-            />
-
-          </div>
-
-          <div className="glass-pill justify-between text-white/80 sm:justify-start">
-
-            AI Status
-
-            <span className="inline-flex items-center gap-2 normal-case tracking-normal">
-
-              <FiCircle className="h-2.5 w-2.5 fill-green-400 text-green-400" />
-
-              Active
-
-            </span>
-
-          </div>
-
-        </div>
-
+      {/* SEARCH BAR (Left) */}
+      <div className="relative w-full sm:w-80">
+        <FiSearch className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <input
+          className="w-full rounded-full border border-white/10 bg-white/[0.04] py-2.5 pl-11 pr-4 text-sm text-white outline-none placeholder:text-slate-500 focus:border-[#4f8cff]/50 transition duration-300"
+          placeholder="Search incidents, users, IPs..."
+        />
       </div>
 
-      {/* Bottom */}
+      {/* CONTROLS (Right) */}
+      <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-start">
+        {/* Notifications */}
+        <button className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08] transition duration-300">
+          <FiBell className="h-5 w-5" />
+          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-[0_0_10px_rgba(239,68,68,0.5)]">
+            3
+          </span>
+        </button>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-4 text-sm text-slate-400">
+        {/* Theme Toggle */}
+        <button className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08] transition duration-300">
+          <FiMoon className="h-5 w-5" />
+        </button>
 
-        <div className="flex items-center gap-3">
-
-          <button
-            className="glass-button h-11 w-11 p-0 text-white"
-          >
-
-            <FiCommand className="h-5 w-5" />
-
-          </button>
-
-          <div className="glass-pill normal-case tracking-normal text-white/80">
-
-            {time.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-
-          </div>
-
+        {/* Date Selector */}
+        <div className="flex h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-slate-300 hover:bg-white/[0.08] cursor-pointer transition duration-300">
+          <FiCalendar className="h-4 w-4 text-slate-400" />
+          <span>{currentDate || "27 Jun 2026"}</span>
+          <FiChevronDown className="h-4 w-4 text-slate-500" />
         </div>
-
-        <div className="flex items-center gap-3">
-
-          <button
-            className="glass-button h-11 w-11 p-0 text-white"
-          >
-
-            <FiBell className="h-5 w-5" />
-
-          </button>
-
-          
-
-            <div className="flex h-11 items-center gap-3 rounded-full border border-white/10 bg-white/[0.06] py-1 pl-2 pr-4">
-
-  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#4f8cff] to-[#7c5cff] text-xs font-bold text-white">
-
-    {initials}
-
-  </span>
-
-  <div className="leading-tight">
-
-    <p className="text-sm font-semibold text-white">
-
-      {user?.name || "Guest"}
-
-    </p>
-
-    <p className="text-[11px] text-slate-400">
-
-      {user?.role || "User"}
-
-    </p>
-
-  </div>
-
-</div>
-          </div>
-
-        </div>
-
-      
-
+      </div>
     </motion.header>
   );
 };

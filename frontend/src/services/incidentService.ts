@@ -170,6 +170,20 @@ export const saveAnalystNotes = async (
 
 };
 
+export const updateIncidentStatus = async (
+  id: string,
+  status: string
+) => {
+
+  const response = await api.put(
+    `/incidents/${id}/status`,
+    { status }
+  );
+
+  return response.data;
+
+};
+
 // ======================================
 // Load Saved Analysis
 // ======================================
