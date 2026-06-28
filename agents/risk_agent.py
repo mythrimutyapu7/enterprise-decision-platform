@@ -37,11 +37,6 @@ class RiskAgent(BaseAgent):
             []
         )
 
-        state.analysis.opportunities = result.get(
-            "opportunities",
-            []
-        )
-
         state.analysis.risks = result.get(
             "risks",
             []
