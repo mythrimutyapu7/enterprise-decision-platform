@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { createIncident } from '../services/incidentService';
@@ -7,12 +7,20 @@ import Card from '../components/common/Card';
 import Loader from '../components/common/Loader';
 
 const CreateIncidentPage = () => {
+  const currentUser = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem('currentUser') || '{}');
+    } catch {
+      return {};
+    }
+  }, []);
+
   const [form, setForm] = useState<CreateIncidentRequest>({
     title: '',
     description: '',
     severity: 'low',
     status: 'open',
-    createdBy: '',
+    createdBy: currentUser.name || '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,8 +82,8 @@ const CreateIncidentPage = () => {
 
       <input
         value={form.createdBy}
-        onChange={handleChange("createdBy")}
-        className="glass-field"
+        disabled
+        className="glass-field opacity-60 cursor-not-allowed"
         placeholder="John Smith"
       />
     </label>

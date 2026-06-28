@@ -1,5 +1,5 @@
-from fastapi import APIRouter
-
+from fastapi import APIRouter, Depends
+from backend.api.dependencies import check_incident_access
 from backend.services.analysis_service import (
     analyze_incident,
     get_saved_analysis,
@@ -17,7 +17,7 @@ router = APIRouter(
 # ----------------------------------------
 
 @router.get("/{id}/analysis")
-async def get_analysis(id: str):
+async def get_analysis(id: str, incident=Depends(check_incident_access)):
     return await get_saved_analysis(id)
 
 
@@ -26,7 +26,7 @@ async def get_analysis(id: str):
 # ----------------------------------------
 
 @router.post("/{id}/analyze")
-async def analyze(id: str):
+async def analyze(id: str, incident=Depends(check_incident_access)):
     return await analyze_incident(id)
 
 
@@ -35,5 +35,5 @@ async def analyze(id: str):
 # ----------------------------------------
 
 @router.get("/{id}/report")
-async def download_report(id: str):
+async def download_report(id: str, incident=Depends(check_incident_access)):
     return await build_investigation_report(id)

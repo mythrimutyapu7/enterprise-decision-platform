@@ -8,6 +8,10 @@ import CreateIncidentPage from './pages/CreateIncidentPage';
 import IncidentDetailsPage from './pages/IncidentDetailsPage';
 import AnalysisPage from './pages/AnalysisPage';
 import SettingsPage from './pages/SettingsPage';
+import PlaybooksPage from './pages/PlaybooksPage';
+import ThreatIntelPage from './pages/ThreatIntelPage';
+import ReportsPage from './pages/ReportsPage';
+import UsersRolesPage from './pages/UsersRolesPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './routes/ProtectedRoute';
 
@@ -30,6 +34,10 @@ const App = () => {
         <Route path="incidents/new" element={<CreateIncidentPage />} />
         <Route path="incidents/:id" element={<IncidentDetailsPage />} />
         <Route path="analysis" element={<AnalysisPage />} />
+        <Route path="playbooks" element={<PlaybooksPage />} />
+        <Route path="threat-intelligence" element={<ThreatIntelPage />} />
+        <Route path="reports" element={<ReportsPage />} />
+        <Route path="users-roles" element={<UsersRolesPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="403" element={<NotFoundPage code={403} />} />

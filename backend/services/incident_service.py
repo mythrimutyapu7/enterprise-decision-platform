@@ -9,15 +9,18 @@ incidents_collection = database["incidents"]
 # Create Incident
 # --------------------------------------------------
 
-async def create_incident(incident):
+async def create_incident(incident, user_email: str):
     try:
+        user_doc = await database["users"].find_one({"email": user_email})
+        user_name = user_doc["name"] if user_doc else incident.created_by
 
         incident_data = {
             "title": incident.title,
             "description": incident.description,
             "severity": incident.severity,
             "status": incident.status,
-            "created_by": incident.created_by,
+            "created_by": user_name,
+            "created_by_email": user_email,
             "created_at": datetime.utcnow(),
 
             # AI Analysis (filled after Analyze)
@@ -105,13 +108,13 @@ async def update_analyst_notes(id, notes):
 # Get All Incidents
 # --------------------------------------------------
 
-async def get_all_incidents():
+async def get_all_incidents(user_email: str):
 
     try:
 
         incidents = []
 
-        async for incident in incidents_collection.find():
+        async for incident in incidents_collection.find({"created_by_email": user_email}):
 
             incident["_id"] = str(incident["_id"])
 
