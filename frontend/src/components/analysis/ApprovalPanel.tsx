@@ -11,11 +11,13 @@ import {
 interface Props {
   approval: any;
   confidence: number;
+  onDownloadReport: () => void;
 }
 
 export default function ApprovalPanel({
   approval,
   confidence,
+  onDownloadReport,
 }: Props) {
 
   const approved = approval?.approved;
@@ -160,6 +162,8 @@ export default function ApprovalPanel({
       {/* DOWNLOAD */}
 
       <button
+        type="button"
+        onClick={onDownloadReport}
         className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 py-3 text-sm text-slate-300 transition hover:bg-slate-800"
       >
         <FiDownload />

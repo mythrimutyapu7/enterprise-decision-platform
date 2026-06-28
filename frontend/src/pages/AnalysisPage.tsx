@@ -7,6 +7,7 @@ import EmptyState from "../components/common/EmptyState";
 
 import {
   analyzeIncident,
+  downloadInvestigationReport,
   getSavedAnalysis,
 } from "../services/incidentService";
 
@@ -34,6 +35,31 @@ export default function AnalysisPage() {
     useState<AnalysisResponse | null>(null);
 
   const [error, setError] = useState("");
+
+  const handleDownloadReport = async () => {
+
+    try {
+
+      const report = await downloadInvestigationReport(incidentId);
+      const reportUrl = window.URL.createObjectURL(report);
+      const link = document.createElement("a");
+
+      link.href = reportUrl;
+      link.download = `investigation-report-${incidentId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(reportUrl);
+
+    }
+
+    catch {
+
+      setError("Unable to download investigation report.");
+
+    }
+
+  };
 
   useEffect(() => {
 
@@ -197,6 +223,9 @@ export default function AnalysisPage() {
             confidence={
               analysis.analysis
                 .confidence
+            }
+            onDownloadReport={
+              handleDownloadReport
             }
           />
 

@@ -226,6 +226,25 @@ export const reAnalyzeIncident = async (
 };
 
 // ======================================
+// Download Investigation Report
+// ======================================
+
+export const downloadInvestigationReport = async (
+  id: string
+): Promise<Blob> => {
+
+  const response = await api.get(
+    `/incidents/${id}/report`,
+    {
+      responseType: "blob",
+    }
+  );
+
+  return response.data;
+
+};
+
+// ======================================
 // Approve Recommendation
 // ======================================
 

@@ -4,6 +4,7 @@ from backend.services.analysis_service import (
     analyze_incident,
     get_saved_analysis,
 )
+from backend.services.pdf_service import build_investigation_report
 
 router = APIRouter(
     prefix="/incidents",
@@ -27,3 +28,12 @@ async def get_analysis(id: str):
 @router.post("/{id}/analyze")
 async def analyze(id: str):
     return await analyze_incident(id)
+
+
+# ----------------------------------------
+# Download Investigation Report
+# ----------------------------------------
+
+@router.get("/{id}/report")
+async def download_report(id: str):
+    return await build_investigation_report(id)
