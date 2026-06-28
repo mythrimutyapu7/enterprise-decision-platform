@@ -29,10 +29,13 @@ const LoginPage = () => {
 
     try {
       const response = await login(form);
+      if (!response.accessToken) {
+        throw new Error('Login failed. No token received.');
+      }
       localStorage.setItem('auth_token', response.accessToken);
       navigate('/dashboard');
     } catch (err) {
-      setError('Invalid credentials. Please try again.');
+      setError(err instanceof Error ? err.message : 'Invalid credentials. Please try again.');
     } finally {
       setIsLoading(false);
     }

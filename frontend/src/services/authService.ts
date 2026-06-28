@@ -8,6 +8,9 @@ export const login = async (payload: LoginRequest) => {
   if (data.access_token && !data.accessToken) {
     data.accessToken = data.access_token;
   }
+  if (!data.accessToken) {
+    throw new Error(data?.detail || data?.error || 'Login failed. No access token was returned by the server.');
+  }
   return data as AuthResponse;
 };
 

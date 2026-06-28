@@ -18,6 +18,7 @@ export default function AnalysisPage() {
     const [searchParams] = useSearchParams();
 
     const incidentId = searchParams.get("id");
+    const activeIncidentId = incidentId ?? "";
 
     const [loading, setLoading] = useState(true);
 
@@ -28,7 +29,7 @@ export default function AnalysisPage() {
 
     useEffect(() => {
 
-        if (!incidentId) return;
+        if (!activeIncidentId) return;
 
         async function load() {
 
@@ -36,7 +37,7 @@ export default function AnalysisPage() {
 
                 setLoading(true);
 
-                const result = await analyzeIncident(incidentId);
+                const result = await analyzeIncident(activeIncidentId);
 
                 setAnalysis(result);
 
@@ -54,7 +55,7 @@ export default function AnalysisPage() {
 
         load();
 
-    }, [incidentId]);
+    }, [activeIncidentId]);
 
     if (!incidentId) {
 

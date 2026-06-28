@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const token = localStorage.getItem('auth_token');
-  return token ? <>{children}</> : <Navigate to="/login" replace />;
+  return token && token !== 'undefined' && token !== 'null' ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;
