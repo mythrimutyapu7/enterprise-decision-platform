@@ -16,7 +16,7 @@ export const setNavigationHandler = (navigate: NavigateFunction) => {
     (error: AxiosError) => {
       if (error.response?.status === 401) {
         localStorage.removeItem('auth_token');
-        navigate('/login');
+        navigate('/');
       }
       return Promise.reject(error);
     },

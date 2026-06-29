@@ -77,7 +77,7 @@ const Sidebar = () => {
   const handleLogout = () => {
     localStorage.removeItem("auth_token");
     localStorage.removeItem("currentUser");
-    navigate("/login");
+    navigate("/");
   };
 
   const nav = (
