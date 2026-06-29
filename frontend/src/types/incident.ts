@@ -19,13 +19,24 @@ export interface IncidentDetail extends IncidentSummary {
   analysis?: Record<string, unknown>;
 }
 
+export interface IngestIncidentRequest {
+  source_type: string;
+  raw_content: string;
+  metadata: Record<string, any>;
+}
+
 export interface CreateIncidentRequest {
-  title: string;
-  description: string;
-  severity: IncidentSeverity;
-  status: IncidentStatus;
-  createdBy: string;
+  title?: string;
+  description?: string;
+  severity?: IncidentSeverity;
+  status?: IncidentStatus;
+  createdBy?: string;
   source?: string;
+  
+  // For flexibility when handling ingested forms
+  source_type?: string;
+  raw_content?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface AnalysisResponse {

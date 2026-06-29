@@ -1,6 +1,7 @@
 import api from "./api";
 import {
   CreateIncidentRequest,
+  IngestIncidentRequest,
   IncidentDetail,
   IncidentSummary,
   AnalysisResponse,
@@ -129,8 +130,12 @@ export const fetchIncidentById = async (
 };
 
 export const createIncident = async (
-  payload: CreateIncidentRequest
+  payload: CreateIncidentRequest | IngestIncidentRequest
 ) => {
+  if ("source_type" in payload) {
+    const response = await api.post("/incidents/", payload);
+    return response.data;
+  }
 
   const response = await api.post("/incidents/", {
     title: payload.title,
@@ -141,7 +146,6 @@ export const createIncident = async (
   });
 
   return response.data;
-
 };
 
 export const deleteIncident = async (
