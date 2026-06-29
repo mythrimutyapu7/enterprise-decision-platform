@@ -8,7 +8,6 @@ import CreateIncidentPage from './pages/CreateIncidentPage';
 import IncidentDetailsPage from './pages/IncidentDetailsPage';
 import AnalysisPage from './pages/AnalysisPage';
 import PlannerPage from './pages/PlannerPage';
-import MemoryPage from './pages/MemoryPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
 import PlaybooksPage from './pages/PlaybooksPage';
@@ -38,7 +37,6 @@ const App = () => {
         <Route path="incidents/:id" element={<IncidentDetailsPage />} />
         <Route path="analysis" element={<AnalysisPage />} />
         <Route path="planner" element={<PlannerPage />} />
-        <Route path="memory" element={<MemoryPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="playbooks" element={<PlaybooksPage />} />
         <Route path="threat-intelligence" element={<ThreatIntelPage />} />

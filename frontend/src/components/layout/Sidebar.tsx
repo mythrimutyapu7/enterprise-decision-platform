@@ -42,11 +42,6 @@ const menuItems = [
     icon: FiCpu,
   },
   {
-    label: "Memory",
-    path: "/memory",
-    icon: FiBookOpen,
-  },
-  {
     label: "AI Analytics",
     path: "/analytics",
     icon: FiBarChart2,
