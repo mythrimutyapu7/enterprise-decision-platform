@@ -7,6 +7,7 @@ import {
   FiActivity,
   FiCpu,
   FiBookOpen,
+  FiBarChart2,
   FiDatabase,
   FiFileText,
   FiSettings,
@@ -39,6 +40,16 @@ const menuItems = [
     label: "AI Planner",
     path: "/planner",
     icon: FiCpu,
+  },
+  {
+    label: "Memory",
+    path: "/memory",
+    icon: FiBookOpen,
+  },
+  {
+    label: "AI Analytics",
+    path: "/analytics",
+    icon: FiBarChart2,
   },
   {
     label: "Reports",
