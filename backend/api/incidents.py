@@ -35,8 +35,12 @@ async def create(
 
 
 @router.get("/")
-async def get_all(user=Depends(get_current_user)):
-    return await get_all_incidents(user["sub"])
+async def get_all(
+    start_date: str = None,
+    end_date: str = None,
+    user=Depends(get_current_user)
+):
+    return await get_all_incidents(user["sub"], start_date, end_date)
 
 @router.get("/{id}")
 async def get_one(id: str, incident=Depends(check_incident_access)):

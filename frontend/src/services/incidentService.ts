@@ -96,13 +96,17 @@ const normalizeIncident = (
   analysis: incident.analysis,
 });
 
-export const fetchIncidents = async (): Promise<
-  IncidentSummary[]
-> => {
+export const fetchIncidents = async (
+  startDate?: string,
+  endDate?: string
+): Promise<IncidentSummary[]> => {
+  const params: Record<string, string> = {};
+  if (startDate) params.start_date = startDate;
+  if (endDate) params.end_date = endDate;
 
   const response = await api.get<
     IncidentSummary[] | BackendListResponse
-  >("/incidents/");
+  >("/incidents/", { params });
 
   const incidents = Array.isArray(response.data)
     ? response.data

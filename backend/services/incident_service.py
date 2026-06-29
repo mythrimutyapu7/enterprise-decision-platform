@@ -115,7 +115,7 @@ async def create_incident(incident, user_email: str):
             "status": status.lower(),
             "created_by": user_name,
             "created_by_email": user_email,
-            "created_at": datetime.utcnow(),
+            "created_at": datetime.now().astimezone().isoformat(),
             
             # Save original source info
             "source_type": source_type,
@@ -232,16 +232,39 @@ async def update_incident_status(id, status):
 # Get All Incidents
 # --------------------------------------------------
 
-async def get_all_incidents(user_email: str):
-
+async def get_all_incidents(user_email: str, start_date: str = None, end_date: str = None):
     try:
+        query = {"created_by_email": user_email}
+
+        if start_date or end_date:
+            date_conditions = []
+            
+            # 1. String comparison for ISO strings
+            str_query = {}
+            if start_date:
+                str_query["$gte"] = start_date
+            if end_date:
+                str_query["$lte"] = end_date
+            date_conditions.append({"created_at": str_query})
+            
+            # 2. Datetime object comparison for legacy Dates
+            try:
+                dt_query = {}
+                if start_date:
+                    s_dt = datetime.fromisoformat(start_date.replace("Z", "+00:00"))
+                    dt_query["$gte"] = s_dt
+                if end_date:
+                    e_dt = datetime.fromisoformat(end_date.replace("Z", "+00:00"))
+                    dt_query["$lte"] = e_dt
+                date_conditions.append({"created_at": dt_query})
+            except Exception:
+                pass
+                
+            query["$or"] = date_conditions
 
         incidents = []
-
-        async for incident in incidents_collection.find({"created_by_email": user_email}):
-
+        async for incident in incidents_collection.find(query):
             incident["_id"] = str(incident["_id"])
-
             incidents.append(incident)
 
         return {

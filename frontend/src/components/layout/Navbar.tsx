@@ -68,13 +68,6 @@ const Navbar = () => {
         >
           {isLight ? <FiSun className="h-5 w-5 text-amber-500" /> : <FiMoon className="h-5 w-5" />}
         </button>
-
-        {/* Date Selector */}
-        <div className="flex h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-slate-300 hover:bg-white/[0.08] cursor-pointer transition duration-300">
-          <FiCalendar className="h-4 w-4 text-slate-400" />
-          <span>{currentDate || "28 Jun 2026"}</span>
-          <FiChevronDown className="h-4 w-4 text-slate-500" />
-        </div>
       </div>
     </motion.header>
   );
