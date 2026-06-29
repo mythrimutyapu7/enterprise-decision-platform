@@ -1,43 +1,19 @@
-"""
-Embedding service.
+import random
 
-Purpose:
-    Convert enterprise knowledge documents into vector embeddings
-    for semantic similarity search.
+class EmbeddingGenerator:
+    """
+    Generates text embeddings using Gemini or mock values.
+    """
+    def __init__(self, model_name: str = "text-embedding-004"):
+        self.model_name = model_name
 
-Current Status:
-    Placeholder implementation.
-
-Planned:
-    - Google Gemini Embeddings
-    - Sentence Transformers
-    - OpenAI Embeddings
-"""
-
-from typing import List
-
-
-class EmbeddingService:
-    """Interface for generating document embeddings."""
-
-    def embed_documents(self, documents: List[str]):
+    def generate_embedding(self, text: str) -> list[float]:
         """
-        Generate embeddings for knowledge documents.
-
-        TODO:
-            Replace with a production embedding model.
+        Generates a mock vector of 768 dimensions deterministically based on text input.
+        This allows tests/skeletons to run without hit to real APIs.
         """
-        raise NotImplementedError(
-            "Embedding generation is not implemented yet."
-        )
-
-    def embed_query(self, query: str):
-        """
-        Generate embedding for an incident query.
-
-        TODO:
-            Replace with a production embedding model.
-        """
-        raise NotImplementedError(
-            "Query embedding is not implemented yet."
-        )
+        vector_size = 768
+        # Create a deterministic mock vector based on string hash
+        seed = sum(ord(c) for c in text) % 10000
+        rng = random.Random(seed)
+        return [rng.uniform(-1.0, 1.0) for _ in range(vector_size)]
