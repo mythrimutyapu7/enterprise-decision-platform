@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from pydantic import BaseModel, Field
 
@@ -13,9 +13,10 @@ class AgentState(BaseModel):
     """
     Shared state exchanged between all AI agents.
 
-    Every agent receives this object,
-    updates only its own section,
-    and returns the updated state.
+    Every agent updates only its own section.
+
+    shared_analysis stores the SINGLE Gemini response
+    that every agent reads from.
     """
 
     incident: IncidentInfo
@@ -34,4 +35,9 @@ class AgentState(BaseModel):
 
     approval: ApprovalResult = Field(
         default_factory=ApprovalResult
+    )
+
+    # NEW
+    shared_analysis: Dict[str, Any] = Field(
+        default_factory=dict
     )

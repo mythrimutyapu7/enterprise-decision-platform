@@ -5,45 +5,39 @@ from pydantic import BaseModel, Field
 
 class AnalysisResult(BaseModel):
     """
-    Result produced by the Risk Agent after analyzing
-    the incident, context and history.
+    Compact AI risk assessment shown on the dashboard.
     """
 
     risk_level: Optional[str] = Field(
         default=None,
-        description="Low, Medium, High or Critical"
+        description="Overall risk level"
     )
 
-    risk_score: Optional[float] = Field(
+    risk_score: Optional[int] = Field(
         default=None,
         ge=0,
         le=100,
-        description="Overall risk score"
+        description="Risk score"
     )
 
-    confidence: Optional[float] = Field(
+    confidence: Optional[int] = Field(
         default=None,
         ge=0,
         le=100,
-        description="Confidence in the analysis"
+        description="AI confidence"
     )
 
     indicators: List[str] = Field(
         default_factory=list,
-        description="Evidence supporting the analysis"
-    )
-
-    missing_information: List[str] = Field(
-        default_factory=list,
-        description="Information still required"
-    )
-
-    opportunities: List[str] = Field(
-        default_factory=list,
-        description="Positive findings"
+        description="Top findings"
     )
 
     risks: List[str] = Field(
         default_factory=list,
-        description="Detected risks"
+        description="Top risks"
+    )
+
+    missing_information: List[str] = Field(
+        default_factory=list,
+        description="Missing information"
     )
