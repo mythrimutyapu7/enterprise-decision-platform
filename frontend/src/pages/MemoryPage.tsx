@@ -7,7 +7,6 @@ import {
   FiCheckCircle, 
   FiClock, 
   FiShield, 
-  FiAlertTriangle,
   FiBookOpen,
   FiArrowRight,
   FiPercent,
@@ -19,11 +18,12 @@ import {
 import Card from '../components/common/Card';
 import Loader from '../components/common/Loader';
 import EmptyState from '../components/common/EmptyState';
-import { fetchIncidents } from '../services/incidentService';
+import { fetchMemory } from '../services/incidentService';
 
 // Interfaces
 interface MemoryItem {
   id: string;
+  dbId: string;
   title: string;
   similarity: number;
   severity: string;
@@ -31,58 +31,24 @@ interface MemoryItem {
   status: 'Approved' | 'Rejected' | 'Pending';
   resolution: string;
   timeToResolution: string;
-  isDemo?: boolean;
 }
 
-// 3 High-Fidelity Demo cases as fallback and baseline references
-const DEMO_MEMORIES: MemoryItem[] = [
-  {
-    id: 'MEM-DEMO-01',
-    title: 'Phishing Alert: APT29 Cozy Bear Executable Campaign',
-    similarity: 94,
-    severity: 'critical',
-    recommendation: 'Revoke compromised Active Directory tokens, enforce global password resets, and block C2 update domains.',
-    status: 'Approved',
-    resolution: 'Active login tokens revoked. AD account password rotated. Enforced MFA geofencing.',
-    timeToResolution: '12 mins',
-    isDemo: true
-  },
-  {
-    id: 'MEM-DEMO-02',
-    title: 'Brute Force Attempts Detected on SSH Web Gateway',
-    similarity: 87,
-    severity: 'medium',
-    recommendation: 'Configure Web Application Firewall rules to drop TCP traffic originating from attacker IP 203.0.113.88.',
-    status: 'Approved',
-    resolution: 'Source IP blacklisted on perimeter firewall for 30 days. Root authentication privileges revoked.',
-    timeToResolution: '24 mins',
-    isDemo: true
-  },
-  {
-    id: 'MEM-DEMO-03',
-    title: 'Sensitive S3 Storage public ACL modification',
-    similarity: 68,
-    severity: 'high',
-    recommendation: 'Initiate automated AWS config remediation playbook to revert bucket permission to private.',
-    status: 'Rejected',
-    resolution: 'Analyst rejected automated runbook. Manual audit confirmed modification was authorized staging testing.',
-    timeToResolution: '45 mins',
-    isDemo: true
-  }
-];
-
 const MemoryPage = () => {
-  const [incidents, setIncidents] = useState<any[]>([]);
+  const [memories, setMemories] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Load database incidents and map them to memory objects
+  // Load database memories
   useEffect(() => {
     const loadMemoryIncidents = async () => {
       try {
-        const data = await fetchIncidents();
-        setIncidents(data);
+        const response = await fetchMemory();
+        if (response.success) {
+          setMemories(response.data || []);
+        } else {
+          setError(response.error || 'Could not retrieve memory registry.');
+        }
       } catch (_err) {
         setError('Could not retrieve memory registry.');
       } finally {
@@ -92,43 +58,33 @@ const MemoryPage = () => {
     loadMemoryIncidents();
   }, []);
 
-  // Deterministic similarity hash based on string values
-  const getDeterministicSimilarity = (title: string, severity: string) => {
-    let hash = 0;
-    for (let i = 0; i < title.length; i++) {
-      hash = title.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const offset = severity === 'critical' || severity === 'high' ? 78 : 65;
-    return offset + Math.abs(hash % 19); // returns score between 65% and 97%
-  };
-
-  // Convert raw DB incidents into normalized MemoryItems
+  // Convert raw DB memories into normalized MemoryItems
   const memoryItems = useMemo((): MemoryItem[] => {
-    const dbMemories: MemoryItem[] = incidents.map(inc => {
-      const title = inc.title || 'Suspicious Alert Logged';
-      const sev = (inc.analysis?.analysis?.risk_level || inc.severity || 'low').toLowerCase();
-      const similarity = getDeterministicSimilarity(title, sev);
+    return memories.map(item => {
+      const title = item.title || 'Suspicious Alert Logged';
+      const sev = (item.severity || 'low').toLowerCase();
       
-      const recommendation = inc.analysis?.recommendation?.recommended_action || 
+      // Use similarity calculated during planning, or default to 100 for primary records
+      const similarity = item.similarity !== undefined ? item.similarity : 100;
+      
+      const recommendation = item.recommendation?.recommended_action || 
         (sev === 'critical' || sev === 'high' 
           ? 'Quarantine the affected subnet, revoke credentials, and audit audit trails.' 
           : 'Monitor host metrics and reset active web portal sessions.');
 
-      const status = inc.analysis?.approval?.execution_status === 'Approved' ? 'Approved' :
-                     inc.analysis?.approval?.execution_status === 'Rejected' ? 'Rejected' :
-                     inc.status === 'resolved' || inc.status === 'closed' ? 'Approved' : 'Pending';
+      const status = item.approval?.execution_status === 'Approved' ? 'Approved' :
+                     item.approval?.execution_status === 'Rejected' ? 'Rejected' : 'Pending';
 
-      const resolution = inc.analysis?.approval?.reviewer_comments || 
-        (inc.status === 'resolved' || inc.status === 'closed' 
+      const resolution = item.approval?.reviewer_comments || 
+        (status === 'Approved' 
           ? 'Remediation playbooks successfully deployed, threat vector contained.' 
           : 'Awaiting mitigation actions verification.');
 
-      const timeToResolution = sev === 'critical' ? '15 mins' : 
-                               sev === 'high' ? '28 mins' : 
-                               sev === 'medium' ? '40 mins' : '90 mins';
+      const timeToResolution = item.time_to_resolution || '15 mins';
 
       return {
-        id: inc.id,
+        id: item.incident_id || item.original_incident_id || item._id || '',
+        dbId: item.original_incident_id || item._id || '',
         title,
         similarity,
         severity: sev,
@@ -138,39 +94,38 @@ const MemoryPage = () => {
         timeToResolution
       };
     });
-
-    // Combine custom DB memories and base baseline memories
-    return [...DEMO_MEMORIES, ...dbMemories];
-  }, [incidents]);
+  }, [memories]);
 
   // Memory Metrics Calculations
   const stats = useMemo(() => {
     const totalFound = memoryItems.length;
+    
+    // Average Jaccard Similarity of the matches stored in memory (seed items are 100)
     const sumSim = memoryItems.reduce((acc, curr) => acc + curr.similarity, 0);
-    const avgSimilarity = totalFound ? Math.round(sumSim / totalFound) : 89;
+    const avgSimilarity = totalFound ? Math.round(sumSim / totalFound) : 0;
     
-    // Default reused recommendations metric
-    const recommendationReused = totalFound ? Math.min(Math.round((memoryItems.filter(m => m.similarity >= 80).length / totalFound) * 100) + 40, 95) : 71;
+    // Matched recommendations percentage (reused playbooks matching >= 80%)
+    const matchedCount = memoryItems.filter(m => m.similarity >= 80).length;
+    const recommendationReused = totalFound ? Math.round((matchedCount / totalFound) * 100) : 0;
     
-    // Default analyst approvals rate
+    // Analyst approval rate on recommendations
     const approvedCount = memoryItems.filter(m => m.status === 'Approved').length;
-    const avgApproval = totalFound ? Math.round((approvedCount / totalFound) * 100) : 93;
+    const avgApproval = totalFound ? Math.round((approvedCount / totalFound) * 100) : 0;
 
     return {
       totalFound,
       avgSimilarity,
-      recommendationReused: Math.min(recommendationReused, 100),
-      avgApproval: Math.min(avgApproval || 93, 100)
+      recommendationReused,
+      avgApproval
     };
   }, [memoryItems]);
 
   // Interactive navigation to analysis page
   const handleCardClick = (item: MemoryItem) => {
-    if (item.isDemo) {
-      // Demo items redirect to standard AI Analysis dashboard generally
-      navigate('/analysis');
+    if (item.dbId && !item.dbId.startsWith('seed-incident-')) {
+      navigate(`/analysis?id=${item.dbId}`);
     } else {
-      navigate(`/analysis?id=${item.id}`);
+      navigate('/analysis');
     }
   };
 
@@ -228,6 +183,16 @@ const MemoryPage = () => {
           <Loader />
           <span className="text-sm text-slate-400">Querying MongoDB incident memory store...</span>
         </div>
+      ) : error ? (
+        <div className="glass-card p-8 text-center text-red-400">
+          <FiAlertOctagon className="h-10 w-10 mx-auto text-red-400 mb-3" />
+          <p className="font-semibold">{error}</p>
+        </div>
+      ) : memoryItems.length === 0 ? (
+        <EmptyState 
+          title="No previous investigations exist in organizational memory." 
+          description="Analyze and approve incidents first to begin building the SOC memory index."
+        />
       ) : (
         <>
           {/* Memory Summary stats cards */}
@@ -273,10 +238,10 @@ const MemoryPage = () => {
             </div>
           </div>
 
-          {/* Main Content Grid */}
+          {/* Main Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            {/* Left: Memory List Grid */}
+            {/* Left Column: Memory List */}
             <div className="lg:col-span-8 space-y-4">
               <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">
                 Incidents Comparison Logs
@@ -292,11 +257,11 @@ const MemoryPage = () => {
                     onClick={() => handleCardClick(item)}
                     className="group rounded-3xl border border-white/10 bg-white/[0.015] hover:bg-white/[0.03] p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/40 cursor-pointer flex flex-col gap-4 text-left"
                   >
-                    {/* Top Row: Title, Severity and Similarity */}
+                    {/* Title & Similarity Badge */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div className="space-y-1 text-left">
                         <span className="text-[10px] font-bold text-slate-500 font-mono">
-                          ID: {item.id.startsWith('MEM-') ? item.id : `INC-${new Date().getFullYear()}-${item.id.slice(-4).toUpperCase()}`}
+                          ID: {item.id}
                         </span>
                         <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors duration-200">
                           {item.title}
@@ -331,7 +296,7 @@ const MemoryPage = () => {
                       </div>
                     </div>
 
-                    {/* Bottom Metadata line */}
+                    {/* Footer */}
                     <div className="flex items-center justify-between text-[11px] text-slate-500 font-semibold font-sans pt-1">
                       <div className="flex items-center gap-2">
                         <FiClock className="w-3.5 h-3.5" />
@@ -342,16 +307,13 @@ const MemoryPage = () => {
                         <FiArrowRight className="w-3.5 h-3.5" />
                       </div>
                     </div>
-
                   </motion.div>
                 ))}
               </AnimatePresence>
             </div>
 
-            {/* Right: Learning Insights Panel */}
+            {/* Right Column: Insights */}
             <div className="lg:col-span-4 space-y-6">
-              
-              {/* Learning Insights Panel */}
               <div className="glass-card p-6 space-y-5 text-left">
                 <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">
                   AI Learning Insights
@@ -364,7 +326,7 @@ const MemoryPage = () => {
                       <span>Class Pattern Analysis</span>
                     </div>
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      The planner detected 5 previous phishing incidents with similar credential-harvesting patterns in AD directory logs.
+                      The planner audits historical incident logs to automatically discover credential compromise and privilege escalation attack vectors.
                     </p>
                   </div>
 
@@ -374,7 +336,7 @@ const MemoryPage = () => {
                       <span>Mitigation Consensus</span>
                     </div>
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      Security analysts approved the "password reset" and "token revocation" playbooks in 100% of matching high-similarity cases.
+                      Playbooks and recommended actions approved by analysts in previous matching cases are automatically passed as context.
                     </p>
                   </div>
 
@@ -384,7 +346,7 @@ const MemoryPage = () => {
                       <span>Confidence Escalation</span>
                     </div>
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      Automated pipeline confidence score increased by <span className="text-white font-bold font-mono">+14%</span>, optimizing agent load orders.
+                      Confidence metrics are automatically adjusted upward when historical match resolutions align with security policies.
                     </p>
                   </div>
                 </div>
@@ -393,42 +355,7 @@ const MemoryPage = () => {
                   * Case memory weights are updated in the background each time an analyst approves or rejects a recommended remediation playbook.
                 </div>
               </div>
-
-              {/* Memory Pipeline Details */}
-              <div className="glass-card p-6 text-left">
-                <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400 mb-4">
-                  Feedback Pipeline
-                </h3>
-                
-                <div className="space-y-4">
-                  <div className="flex gap-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
-                      <FiAlertOctagon className="w-4 h-4" />
-                    </span>
-                    <div>
-                      <p className="text-xs font-bold text-white">Analyst Audit Feedback</p>
-                      <p className="text-[11px] text-slate-400 mt-1 leading-normal">
-                        When playbooks are rejected, the Planner reduces similarity routing weights for that specific category.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
-                      <FiDatabase className="w-4 h-4" />
-                    </span>
-                    <div>
-                      <p className="text-xs font-bold text-white">Continuous Vector Indexing</p>
-                      <p className="text-[11px] text-slate-400 mt-1 leading-normal">
-                        Incidents are indexed into the long-term incident database automatically upon resolution.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
             </div>
-
           </div>
         </>
       )}

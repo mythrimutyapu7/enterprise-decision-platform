@@ -7,7 +7,7 @@ class RecommendationAgent(BaseAgent):
 
         super().__init__("Recommendation Agent")
 
-    def run(self, state):
+    async def run(self, state):
 
         self.log_start()
 

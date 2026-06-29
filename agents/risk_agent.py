@@ -6,7 +6,7 @@ class RiskAgent(BaseAgent):
     def __init__(self):
         super().__init__("Risk Agent")
 
-    def run(self, state):
+    async def run(self, state):
 
         self.log_start()
 

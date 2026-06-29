@@ -22,7 +22,7 @@ class BaseAgent(ABC):
         logger.error(f"{self.name}: {error}")
 
     @abstractmethod
-    def run(self, state):
+    async def run(self, state):
         """
         Every agent MUST implement this method.
         """

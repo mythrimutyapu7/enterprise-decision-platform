@@ -26,8 +26,8 @@ async def get_analysis(id: str, incident=Depends(check_incident_access)):
 # ----------------------------------------
 
 @router.post("/{id}/analyze")
-async def analyze(id: str, incident=Depends(check_incident_access)):
-    return await analyze_incident(id)
+async def analyze(id: str, force_fresh: bool = False, incident=Depends(check_incident_access)):
+    return await analyze_incident(id, force_fresh=force_fresh)
 
 
 # ----------------------------------------

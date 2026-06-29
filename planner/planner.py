@@ -7,6 +7,6 @@ class Planner:
 
         self.workflow = SecurityWorkflow()
 
-    def run(self, state):
+    async def run(self, state, force_fresh: bool = False):
 
-        return self.workflow.run(state)
+        return await self.workflow.run(state, force_fresh=force_fresh)

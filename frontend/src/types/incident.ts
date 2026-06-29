@@ -93,4 +93,7 @@ export interface AnalysisResponse {
     approval_timestamp: string | null;
     execution_status: string;
   };
+
+  planner_decision?: string;
+  similarity_score?: number;
 }

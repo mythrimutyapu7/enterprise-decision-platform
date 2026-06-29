@@ -41,3 +41,8 @@ class AgentState(BaseModel):
     shared_analysis: Dict[str, Any] = Field(
         default_factory=dict
     )
+
+    planner_decision: Optional[str] = None
+    similarity_score: Optional[float] = None
+    matching_incident_id: Optional[str] = None
+    similar_recommendation: Optional[str] = None

@@ -81,6 +81,10 @@ async def approve_recommendation(id: str):
 
         )
 
+        # Learning memory: save the completed case to memory
+        from backend.services.memory_service import add_to_memory
+        await add_to_memory(id)
+
         incident = await incidents_collection.find_one(
             {"_id": ObjectId(id)}
         )
@@ -136,6 +140,10 @@ async def reject_recommendation(id: str):
             }
 
         )
+
+        # Learning memory: save the completed case to memory
+        from backend.services.memory_service import add_to_memory
+        await add_to_memory(id)
 
         incident = await incidents_collection.find_one(
             {"_id": ObjectId(id)}

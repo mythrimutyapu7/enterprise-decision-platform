@@ -68,7 +68,22 @@ class LLMService:
     # SINGLE GEMINI CALL
     # =====================================================
 
-    def generate_complete_analysis(self, incident):
+    def generate_complete_analysis(self, incident, similar_recommendation: str = None):
+
+        historical_context = ""
+        if similar_recommendation:
+            historical_context = f"""
+----------------------------------------------------
+HISTORICAL CONTEXT
+
+A highly similar incident was resolved in the past. Below is the recommendation that was approved and successfully resolved that incident:
+"{similar_recommendation}"
+
+You MUST evaluate this historical recommendation:
+1. If it is relevant, reuse or adapt it for the current incident's recommendation.
+2. If you base the recommendation on this historical action, increase your analysis and recommendation confidence scores (risk/confidence fields in the JSON response) to reflect that this is a recognized/recurring scenario (e.g., set confidence to 95-100%).
+----------------------------------------------------
+"""
 
         prompt = f"""
 You are Microsoft Security Copilot.
@@ -84,6 +99,8 @@ DO NOT explain your reasoning.
 DO NOT repeat the incident description.
 
 Keep every response concise.
+
+{historical_context}
 
 ----------------------------------------------------
 

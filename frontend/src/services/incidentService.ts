@@ -225,11 +225,14 @@ export const getSavedAnalysis = async (
 // ======================================
 
 export const analyzeIncident = async (
-  id: string
+  id: string,
+  forceFresh?: boolean
 ): Promise<AnalysisResponse> => {
 
   const response = await api.post(
-    `/incidents/${id}/analyze`
+    `/incidents/${id}/analyze`,
+    null,
+    { params: { force_fresh: forceFresh ? "true" : "false" } }
   );
 
   if (!response.data.success) {
@@ -252,20 +255,26 @@ export const reAnalyzeIncident = async (
   id: string
 ): Promise<AnalysisResponse> => {
 
-  const response = await api.post(
-    `/incidents/${id}/reanalyze`
-  );
+  return analyzeIncident(id, true);
 
-  if (!response.data.success) {
+};
 
-    throw new Error(
-      response.data.error || "Analysis failed"
-    );
+// ======================================
+// Search Memory
+// ======================================
 
-  }
+export const searchMemory = async (id: string) => {
+  const response = await api.post(`/incidents/${id}/memory-search`);
+  return response.data;
+};
 
-  return response.data.analysis;
+// ======================================
+// Fetch Memory
+// ======================================
 
+export const fetchMemory = async () => {
+  const response = await api.get("/memory");
+  return response.data;
 };
 
 // ======================================

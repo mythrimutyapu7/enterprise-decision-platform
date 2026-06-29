@@ -3,7 +3,7 @@ from planner.state import AgentState
 from planner.models.incident import IncidentInfo
 
 
-def run_ai_analysis(data: dict):
+async def run_ai_analysis(data: dict, force_fresh: bool = False):
 
     state = AgentState(
 
@@ -13,6 +13,6 @@ def run_ai_analysis(data: dict):
 
     planner = Planner()
 
-    result = planner.run(state)
+    result = await planner.run(state, force_fresh=force_fresh)
 
     return result.model_dump()

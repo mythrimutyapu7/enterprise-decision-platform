@@ -217,6 +217,9 @@ async def update_incident_status(id, status):
                 }
             }
         )
+        if status.lower() in ["resolved", "closed"]:
+            from backend.services.memory_service import add_to_memory
+            await add_to_memory(id)
         return {
             "success": True,
             "message": "Status updated successfully"

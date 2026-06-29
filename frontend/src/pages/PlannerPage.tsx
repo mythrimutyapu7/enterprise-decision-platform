@@ -8,8 +8,6 @@ import {
   FiClock, 
   FiLayers, 
   FiAlertTriangle,
-  FiHelpCircle,
-  FiChevronRight,
   FiActivity,
   FiUserCheck,
   FiGlobe,
@@ -30,61 +28,25 @@ interface TimelineStep {
   color: string;
 }
 
-const DEFAULT_DEMO_INCIDENTS = [
-  {
-    id: 'DEMO-CRIT-01',
-    title: 'Phishing Alert: APT29 Cozy Bear Executable Campaign',
-    severity: 'critical',
-    status: 'open',
-    createdAt: new Date().toISOString(),
-    analysis: {
-      analysis: {
-        risk_score: 95,
-        risk_level: 'critical',
-        confidence: 94
-      }
-    }
-  },
-  {
-    id: 'DEMO-MED-02',
-    title: 'Multiple Failed SSH Logins on Staging API Gateway',
-    severity: 'medium',
-    status: 'resolved',
-    createdAt: new Date().toISOString(),
-    analysis: {
-      analysis: {
-        risk_score: 45,
-        risk_level: 'medium',
-        confidence: 97
-      }
-    }
-  }
-];
-
 const PlannerPage = () => {
   const [incidents, setIncidents] = useState<any[]>([]);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load analyzed incidents from backend + inject demo incidents
+  // Load analyzed incidents from backend only (no demo incidents)
   useEffect(() => {
     const loadIncidents = async () => {
       try {
         const data = await fetchIncidents() as any[];
         // Filter incidents to show only those that have been analyzed (analysis isn't null)
         const analyzed = data.filter(inc => inc.analysis !== null);
-        
-        // Combine demo incidents and actual analyzed backend incidents
-        const combined = [...DEFAULT_DEMO_INCIDENTS, ...analyzed];
-        setIncidents(combined);
-        if (combined.length > 0) {
-          setSelectedIncidentId(combined[0].id);
+        setIncidents(analyzed);
+        if (analyzed.length > 0) {
+          setSelectedIncidentId(analyzed[0].id);
         }
       } catch (_err) {
-        // Fallback to demo incidents on API error
-        setIncidents(DEFAULT_DEMO_INCIDENTS);
-        setSelectedIncidentId(DEFAULT_DEMO_INCIDENTS[0].id);
+        setError('Unable to load plans registry.');
       } finally {
         setIsLoading(false);
       }
@@ -103,20 +65,22 @@ const PlannerPage = () => {
   }, [selectedIncident]);
 
   const formatIncidentId = (id: string, createdAt: string) => {
-    if (id.startsWith('DEMO-')) return id;
     const date = new Date(createdAt);
     const year = isNaN(date.getFullYear()) ? 2026 : date.getFullYear();
     const suffix = id.slice(-4).toUpperCase();
     return `INC-${year}-${suffix}`;
   };
 
-  // Generate dynamic execution plan timeline based on incident severity
+  // Get dynamic planner metadata
+  const plannerDecision = selectedIncident?.analysis?.planner_decision || "No match found. Starting new investigation.";
+  const similarityScore = selectedIncident?.analysis?.similarity_score !== undefined ? selectedIncident.analysis.similarity_score : 0;
+  const isReused = plannerDecision.includes("reused");
+
+  // Generate dynamic execution plan timeline based on incident and Planner decisions
   const executionTimeline = useMemo((): TimelineStep[] => {
     if (!selectedIncident) return [];
 
-    const isCriticalOrHigh = severity === 'critical' || severity === 'high';
-
-    return [
+    const steps: TimelineStep[] = [
       {
         name: 'Planner Ingest',
         status: 'Executed',
@@ -125,97 +89,136 @@ const PlannerPage = () => {
         confidence: '100%',
         icon: FiSettings,
         color: 'text-blue-400 bg-blue-400/10 border-blue-400/20'
-      },
-      {
-        name: 'Memory Lookup',
-        status: 'Executed',
-        time: '85 ms',
-        reason: 'Searched historical vector database for matching malicious patterns or IP blocks.',
-        confidence: '98%',
-        icon: FiDatabase,
-        color: 'text-purple-400 bg-purple-400/10 border-purple-400/20'
-      },
-      {
-        name: 'Knowledge Retrieval',
-        status: 'Executed',
-        time: '140 ms',
-        reason: 'Queried corporate security policies and incident response playbook guidelines.',
-        confidence: '95%',
-        icon: FiSearch,
-        color: 'text-indigo-400 bg-indigo-400/10 border-indigo-400/20'
-      },
-      {
-        name: 'Context Agent',
-        status: isCriticalOrHigh ? 'Executed' : 'Fast Path',
-        time: isCriticalOrHigh ? '190 ms' : '45 ms',
-        reason: isCriticalOrHigh 
-          ? 'Enriched device records, LDAP user details, and asset criticality scores for target nodes.' 
-          : 'Retrieved standard asset context dynamically from local cache (fast path).',
-        confidence: isCriticalOrHigh ? '96%' : '99%',
-        icon: FiLayers,
-        color: isCriticalOrHigh 
-          ? 'text-teal-400 bg-teal-400/10 border-teal-400/20' 
-          : 'text-sky-400 bg-sky-400/10 border-sky-400/20'
-      },
-      {
-        name: 'Threat Intelligence Agent',
-        status: isCriticalOrHigh ? 'Executed' : 'Skipped',
-        time: isCriticalOrHigh ? '380 ms' : '0 ms',
-        reason: isCriticalOrHigh 
-          ? 'Triggered active network feed scan. Checked AlienVault and VirusTotal for domain and hash matches.' 
-          : 'Skipped: Low severity incident does not warrant external IOC feed consumption rules.',
-        confidence: isCriticalOrHigh ? '94%' : undefined,
-        icon: FiGlobe,
-        color: isCriticalOrHigh 
-          ? 'text-amber-400 bg-amber-400/10 border-amber-400/20' 
-          : 'text-slate-500 bg-slate-500/5 border-slate-700/30'
-      },
-      {
-        name: 'Analysis Agent',
-        status: 'Executed',
-        time: isCriticalOrHigh ? '420 ms' : '180 ms',
-        reason: isCriticalOrHigh 
-          ? 'Correlated findings from Threat Intel, asset details, and playbooks to compute risk score.' 
-          : 'Generated localized risk estimation using template classification rules.',
-        confidence: isCriticalOrHigh ? '92%' : '96%',
-        icon: FiActivity,
-        color: 'text-[#4f8cff] bg-[#4f8cff]/10 border-[#4f8cff]/20'
-      },
-      {
-        name: 'Recommendation Agent',
-        status: 'Executed',
-        time: isCriticalOrHigh ? '210 ms' : '90 ms',
-        reason: 'Compiled target isolation script, system patches, and response runbook tasks.',
-        confidence: '97%',
-        icon: FiCpu,
-        color: 'text-purple-400 bg-purple-400/10 border-purple-400/20'
-      },
-      {
-        name: 'Approval Agent',
-        status: isCriticalOrHigh ? 'Human Review Required' : 'Executed',
-        time: isCriticalOrHigh ? 'N/A' : '75 ms',
-        reason: isCriticalOrHigh 
-          ? 'Critical threat risk score exceeds auto-remediation thresholds. Blocked actions pending analyst review.' 
-          : 'Auto-approved incident remediation actions: risk score falls below approval thresholds.',
-        confidence: isCriticalOrHigh ? undefined : '98%',
-        icon: FiUserCheck,
-        color: isCriticalOrHigh 
-          ? 'text-critical bg-critical/10 border-critical/20 animate-pulse' 
-          : 'text-success bg-success/10 border-success/20'
       }
     ];
-  }, [selectedIncident, severity]);
+
+    // Memory Lookup step showing similarity and routing decision
+    if (isReused) {
+      steps.push({
+        name: 'Memory Agent Lookup',
+        status: 'Fast Path',
+        time: '85 ms',
+        reason: `Duplicate investigation found with ${similarityScore}% similarity. Bypassing context, risk, and recommendation agents to reuse playbooks.`,
+        confidence: `${similarityScore}%`,
+        icon: FiDatabase,
+        color: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20'
+      });
+    } else if (similarityScore >= 80) {
+      steps.push({
+        name: 'Memory Agent Lookup',
+        status: 'Executed',
+        time: '95 ms',
+        reason: `Similar investigation found with ${similarityScore}% similarity. Injected historical recommendation as additional Planner context.`,
+        confidence: `${similarityScore}%`,
+        icon: FiDatabase,
+        color: 'text-purple-400 bg-purple-400/10 border-purple-400/20'
+      });
+    } else {
+      steps.push({
+        name: 'Memory Agent Lookup',
+        status: 'Executed',
+        time: '75 ms',
+        reason: `Memory check completed. No historical match found (similarity score: ${similarityScore}%). Starting a new AI investigation.`,
+        confidence: '100%',
+        icon: FiDatabase,
+        color: 'text-indigo-400 bg-indigo-400/10 border-indigo-400/20'
+      });
+    }
+
+    steps.push({
+      name: 'Knowledge Retrieval',
+      status: 'Executed',
+      time: '110 ms',
+      reason: 'Queried corporate security policies and incident response playbook guidelines.',
+      confidence: '95%',
+      icon: FiSearch,
+      color: 'text-indigo-400 bg-indigo-400/10 border-indigo-400/20'
+    });
+
+    // Context Agent
+    steps.push({
+      name: 'Context Agent',
+      status: isReused ? 'Skipped' : 'Executed',
+      time: isReused ? '0 ms' : '150 ms',
+      reason: isReused 
+        ? 'Skipped: Context agent bypassed because historical duplicate investigation was reused.'
+        : 'Enriched device records, LDAP user details, and asset criticality scores for target nodes.',
+      confidence: isReused ? undefined : '96%',
+      icon: FiLayers,
+      color: isReused
+        ? 'text-slate-500 bg-slate-500/5 border-slate-700/30'
+        : 'text-teal-400 bg-teal-400/10 border-teal-400/20'
+    });
+
+    // Analysis Agent
+    steps.push({
+      name: 'Analysis Agent',
+      status: isReused ? 'Skipped' : 'Executed',
+      time: isReused ? '0 ms' : '220 ms',
+      reason: isReused
+        ? 'Skipped: Risk computation bypassed. Copying analysis outcomes from reused investigation.'
+        : 'Correlated findings from asset details and threat vectors to compute risk score.',
+      confidence: isReused ? undefined : '92%',
+      icon: FiActivity,
+      color: isReused
+        ? 'text-slate-500 bg-slate-500/5 border-slate-700/30'
+        : 'text-[#4f8cff] bg-[#4f8cff]/10 border-[#4f8cff]/20'
+    });
+
+    // Recommendation Agent
+    steps.push({
+      name: 'Recommendation Agent',
+      status: isReused ? 'Skipped' : 'Executed',
+      time: isReused ? '0 ms' : '120 ms',
+      reason: isReused
+        ? 'Skipped: Recommendation generation bypassed. Reusing approved actions.'
+        : 'Compiled target isolation scripts, credentials rotators, and response playbooks.',
+      confidence: isReused ? undefined : '97%',
+      icon: FiCpu,
+      color: isReused
+        ? 'text-slate-500 bg-slate-500/5 border-slate-700/30'
+        : 'text-purple-400 bg-purple-400/10 border-purple-400/20'
+    });
+
+    // Approval Agent
+    const executionStatus = selectedIncident.analysis?.approval?.execution_status || 'Pending';
+    const isApproved = executionStatus === 'Approved';
+    const isRejected = executionStatus === 'Rejected';
+    
+    steps.push({
+      name: 'Approval Agent',
+      status: isApproved || isRejected ? 'Executed' : 'Human Review Required',
+      time: isApproved || isRejected ? '75 ms' : 'N/A',
+      reason: isApproved 
+        ? 'Incident remediation playbooks approved by Security Analyst.'
+        : isRejected
+        ? 'Incident remediation playbooks rejected by Security Analyst.'
+        : 'Remediation playbooks pending manual gate review from Security Analyst.',
+      confidence: isApproved ? '100%' : undefined,
+      icon: FiUserCheck,
+      color: isApproved 
+        ? 'text-success bg-success/10 border-success/20' 
+        : isRejected
+        ? 'text-red-400 bg-red-400/10 border-red-400/20'
+        : 'text-critical bg-critical/10 border-critical/20 animate-pulse'
+    });
+
+    return steps;
+  }, [selectedIncident, plannerDecision, similarityScore, isReused]);
 
   // Compute stats metrics dynamically
   const totalExecutionTime = useMemo(() => {
-    if (severity === 'critical' || severity === 'high') return '1,447 ms';
-    return '625 ms';
-  }, [severity]);
+    if (isReused) return '207 ms';
+    return severity === 'critical' || severity === 'high' ? '1,120 ms' : '625 ms';
+  }, [severity, isReused]);
 
   const plannerStatus = useMemo(() => {
-    if (severity === 'critical' || severity === 'high') return 'Awaiting Human Review';
-    return 'Optimized Path Executed';
-  }, [severity]);
+    if (isReused) return 'Duplicate Investigation Reused';
+    const executionStatus = selectedIncident?.analysis?.approval?.execution_status || 'Pending';
+    if (executionStatus === 'Approved') return 'Remediation Approved';
+    if (executionStatus === 'Rejected') return 'Remediation Rejected';
+    return 'Awaiting Human Review';
+  }, [selectedIncident, isReused]);
 
   // Badges renderer
   const renderStatusBadge = (status: string) => {
@@ -274,7 +277,7 @@ const PlannerPage = () => {
           <Loader />
           <span className="text-sm text-slate-400">Loading plan registry...</span>
         </div>
-      ) : !selectedIncident ? (
+      ) : incidents.length === 0 ? (
         <EmptyState title="No active plans" description="Please verify analyzed incidents are present in the SOC." />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -309,7 +312,7 @@ const PlannerPage = () => {
                 <div className="flex justify-between border-b border-white/5 pb-2">
                   <span className="text-slate-400 font-semibold">Planner Status:</span>
                   <span className={`font-bold ${
-                    plannerStatus.includes('Human') ? 'text-red-400' : 'text-emerald-400'
+                    plannerStatus.includes('Awaiting') ? 'text-red-400' : 'text-emerald-400'
                   }`}>
                     {plannerStatus}
                   </span>
@@ -331,15 +334,15 @@ const PlannerPage = () => {
                 <div className="mt-3.5 space-y-2.5">
                   <div className="flex items-center gap-2 text-xs font-semibold text-slate-200">
                     <FiCheckCircle className="text-emerald-400 w-4 h-4 shrink-0" />
-                    <span>{severity === 'critical' || severity === 'high' ? 'High Severity Rules Active' : 'Low Severity Fast-Track Policy'}</span>
+                    <span>Memory agent routing logic active</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs font-semibold text-slate-200">
                     <FiCheckCircle className="text-emerald-400 w-4 h-4 shrink-0" />
-                    <span>{severity === 'critical' ? 'Zero-Trust Payload Analysis Flag' : 'Standard Ingress Validation'}</span>
+                    <span>Similarity threshold gates enforced (95% / 80%)</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs font-semibold text-slate-200">
                     <FiCheckCircle className="text-emerald-400 w-4 h-4 shrink-0" />
-                    <span>{severity === 'critical' || severity === 'high' ? 'Active Threat Intelligence Check' : 'Local Memory Search Only'}</span>
+                    <span>{isReused ? 'Bypass pipeline triggers active' : 'Full pipeline ingestion active'}</span>
                   </div>
                 </div>
               </div>
@@ -350,41 +353,36 @@ const PlannerPage = () => {
                 </h3>
                 
                 <div className="space-y-4 text-xs leading-relaxed text-slate-300">
-                  {severity === 'critical' || severity === 'high' ? (
-                    <>
-                      <div>
-                        <p className="font-bold text-blue-300">Added Threat Intelligence Agent because:</p>
-                        <ul className="list-disc pl-4 mt-1.5 space-y-1 text-slate-400">
-                          <li>Severity matches Critical / High incident rules.</li>
-                          <li>External IOC scanning policies are triggered.</li>
-                          <li>Confidence rating check requires live API vector feeds.</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <p className="font-bold text-orange-300">Triggered Approval Agent human gate because:</p>
-                        <ul className="list-disc pl-4 mt-1.5 space-y-1 text-slate-400">
-                          <li>Calculated risk score exceeds threshold limits.</li>
-                          <li>Zero-day vectors detected in analyzed parameters.</li>
-                        </ul>
-                      </div>
-                    </>
+                  <div>
+                    <p className="font-bold text-blue-300">Orchestrator Decision:</p>
+                    <p className="text-slate-400 mt-1">{plannerDecision}</p>
+                  </div>
+                  {isReused ? (
+                    <div>
+                      <p className="font-bold text-emerald-300">Fast path reuse policy triggered:</p>
+                      <ul className="list-disc pl-4 mt-1.5 space-y-1 text-slate-400">
+                        <li>Jaccard match similarity score is {similarityScore}%.</li>
+                        <li>This meets the duplicates limit rules threshold (95%).</li>
+                        <li>Automated reuse of recommended runbooks deployed.</li>
+                      </ul>
+                    </div>
+                  ) : similarityScore >= 80 ? (
+                    <div>
+                      <p className="font-bold text-purple-300">Injected previous similar recommendation:</p>
+                      <ul className="list-disc pl-4 mt-1.5 space-y-1 text-slate-400">
+                        <li>Jaccard match similarity score is {similarityScore}%.</li>
+                        <li>Meets similar context retrieval thresholds (80% - 95%).</li>
+                        <li>Confidence level upgraded using historical context.</li>
+                      </ul>
+                    </div>
                   ) : (
-                    <>
-                      <div>
-                        <p className="font-bold text-slate-400">Skipped Threat Intelligence Agent because:</p>
-                        <ul className="list-disc pl-4 mt-1.5 space-y-1 text-slate-500">
-                          <li>Severity is below threat intelligence payload rules.</li>
-                          <li>No indicators of compromise detected in local lookup logs.</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <p className="font-bold text-blue-300 font-semibold">Executed Fast Path Context Agent because:</p>
-                        <ul className="list-disc pl-4 mt-1.5 space-y-1 text-slate-400">
-                          <li>Highly similar incidents (3+) were previously closed in the memory index.</li>
-                          <li>Cached mapping rules applied directly.</li>
-                        </ul>
-                      </div>
-                    </>
+                    <div>
+                      <p className="font-bold text-slate-400">Standard pipeline run:</p>
+                      <ul className="list-disc pl-4 mt-1.5 space-y-1 text-slate-550">
+                        <li>Jaccard match similarity score is below thresholds ({similarityScore}%).</li>
+                        <li>Full execution of Context, Risk, and Recommendation agents required.</li>
+                      </ul>
+                    </div>
                   )}
                 </div>
               </div>
