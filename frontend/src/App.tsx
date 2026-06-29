@@ -7,6 +7,7 @@ import IncidentListPage from './pages/IncidentListPage';
 import CreateIncidentPage from './pages/CreateIncidentPage';
 import IncidentDetailsPage from './pages/IncidentDetailsPage';
 import AnalysisPage from './pages/AnalysisPage';
+import PlannerPage from './pages/PlannerPage';
 import SettingsPage from './pages/SettingsPage';
 import PlaybooksPage from './pages/PlaybooksPage';
 import ThreatIntelPage from './pages/ThreatIntelPage';
@@ -34,6 +35,7 @@ const App = () => {
         <Route path="incidents/new" element={<CreateIncidentPage />} />
         <Route path="incidents/:id" element={<IncidentDetailsPage />} />
         <Route path="analysis" element={<AnalysisPage />} />
+        <Route path="planner" element={<PlannerPage />} />
         <Route path="playbooks" element={<PlaybooksPage />} />
         <Route path="threat-intelligence" element={<ThreatIntelPage />} />
         <Route path="reports" element={<ReportsPage />} />

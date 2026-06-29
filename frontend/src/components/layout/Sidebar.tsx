@@ -5,6 +5,7 @@ import {
   FiShield,
   FiPlusCircle,
   FiActivity,
+  FiCpu,
   FiBookOpen,
   FiDatabase,
   FiFileText,
@@ -33,6 +34,11 @@ const menuItems = [
     label: "AI Analysis",
     path: "/analysis",
     icon: FiActivity,
+  },
+  {
+    label: "AI Planner",
+    path: "/planner",
+    icon: FiCpu,
   },
   {
     label: "Reports",
