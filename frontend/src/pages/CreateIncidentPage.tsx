@@ -527,34 +527,7 @@ const CreateIncidentPage = () => {
                         </label>
                       </div>
 
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <label className="block text-left">
-                          <span className="mb-2 block text-xs font-semibold text-slate-300">Severity</span>
-                          <select
-                            value={manualForm.severity}
-                            onChange={e => setManualForm({...manualForm, severity: e.target.value as IncidentSeverity})}
-                            className="glass-field py-[11px] text-left"
-                          >
-                            <option value="low" className="bg-[#0b1120] text-white">Low</option>
-                            <option value="medium" className="bg-[#0b1120] text-white">Medium</option>
-                            <option value="high" className="bg-[#0b1120] text-white">High</option>
-                            <option value="critical" className="bg-[#0b1120] text-white">Critical</option>
-                          </select>
-                        </label>
-                        <label className="block text-left">
-                          <span className="mb-2 block text-xs font-semibold text-slate-300">Status</span>
-                          <select
-                            value={manualForm.status}
-                            onChange={e => setManualForm({...manualForm, status: e.target.value as IncidentStatus})}
-                            className="glass-field py-[11px] text-left"
-                          >
-                            <option value="open" className="bg-[#0b1120] text-white">Open</option>
-                            <option value="in_progress" className="bg-[#0b1120] text-white">In Progress</option>
-                            <option value="resolved" className="bg-[#0b1120] text-white">Resolved</option>
-                            <option value="closed" className="bg-[#0b1120] text-white">Closed</option>
-                          </select>
-                        </label>
-                      </div>
+                      {/* Severity and Status removed from manual creation as they are decided after analysis */}
 
                       <label className="block text-left">
                         <span className="mb-2 block text-xs font-semibold text-slate-300">Incident Description</span>

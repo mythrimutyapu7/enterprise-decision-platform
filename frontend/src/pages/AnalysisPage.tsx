@@ -207,6 +207,9 @@ export default function AnalysisPage() {
       try {
         setLoading(true);
         setError("");
+        setSearchState("idle");
+        setSearchResult(null);
+        setSearchStatusText("");
         
         const saved = await getSavedAnalysis(incidentId);
         if (saved) {

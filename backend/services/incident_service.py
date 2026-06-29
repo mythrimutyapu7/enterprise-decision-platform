@@ -331,11 +331,16 @@ async def delete_incident(id):
         )
 
         if result.deleted_count == 0:
-
             return {
                 "success": False,
                 "message": "Incident not found"
             }
+
+        # Clean up any memory records associated with this deleted incident
+        await database["memory"].delete_many(
+            {"original_incident_id": str(id)}
+        )
+
 
         return {
             "success": True,

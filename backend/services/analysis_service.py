@@ -16,6 +16,36 @@ incidents_collection = database["incidents"]
 async def get_saved_analysis(id: str):
 
     try:
+        if id.startswith("seed-"):
+            memory_doc = await database["memory"].find_one({"original_incident_id": id})
+            if not memory_doc:
+                return {
+                    "success": False,
+                    "message": "Seeded memory not found"
+                }
+            
+            mock_analysis = {
+                "incident": {
+                    "incident_id": 1,
+                    "title": memory_doc.get("title", "Suspicious Alert"),
+                    "description": memory_doc.get("description", ""),
+                    "summary": "Historical baseline incident investigation.",
+                    "incident_type": "Security Incident",
+                    "severity": memory_doc.get("severity", "low").upper(),
+                    "source": "Organizational Memory",
+                    "key_findings": ["Seeded incident loaded from organizational memory database."]
+                },
+                "analysis": memory_doc.get("analysis", {}),
+                "recommendation": memory_doc.get("recommendation", {}),
+                "approval": memory_doc.get("approval", {}),
+                "context": memory_doc.get("context", {}),
+                "planner_decision": "Existing investigation reused.",
+                "similarity_score": 100
+            }
+            return {
+                "success": True,
+                "analysis": mock_analysis
+            }
 
         incident = await incidents_collection.find_one(
             {"_id": ObjectId(id)}
@@ -70,6 +100,7 @@ async def analyze_incident(id: str, force_fresh: bool = False):
         }
 
     ai_input = {
+        "id": str(incident["_id"]),
         "incident_id": incident.get("incident_id") or 1,
         "title": incident["title"],
         "description": incident["description"],
@@ -105,6 +136,10 @@ async def analyze_incident(id: str, force_fresh: bool = False):
                 }
             }
         )
+
+        # Learning memory: save the completed case to memory
+        from backend.services.memory_service import add_to_memory
+        await add_to_memory(id)
 
         return {
             "success": True,

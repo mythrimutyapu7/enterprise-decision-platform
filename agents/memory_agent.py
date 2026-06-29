@@ -10,6 +10,7 @@ class MemoryAgent(BaseAgent):
         
         # Prepare data structure for the search query
         incident_data = {
+            "id": state.incident.id,
             "title": state.incident.title,
             "description": state.incident.description,
             "severity": state.incident.severity

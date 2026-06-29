@@ -10,6 +10,7 @@ class IncidentInfo(BaseModel):
     This is the starting point of the entire AI workflow.
     """
 
+    id: Optional[str] = None
     incident_id: Optional[int] = None
     summary: Optional[str] = None
     incident_type: Optional[str] = None

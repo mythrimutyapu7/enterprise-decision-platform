@@ -146,7 +146,22 @@ async def search_similar_incidents(incident_data: dict) -> dict:
         best_match = None
         best_score = 0.0
 
+        current_id = str(incident_data.get("_id") or incident_data.get("id") or "")
         async for memory_doc in memory_collection.find({}):
+            orig_id = memory_doc.get("original_incident_id")
+
+            # Exclude current incident from matches
+            if str(orig_id) == current_id:
+                continue
+
+            # Clean up/exclude deleted incidents on the fly
+            if orig_id and not str(orig_id).startswith("seed-"):
+                exists = await database["incidents"].count_documents({"_id": ObjectId(orig_id)})
+                if exists == 0:
+                    # Delete orphaned memory document from DB
+                    await memory_collection.delete_one({"_id": memory_doc["_id"]})
+                    continue
+
             score = calculate_similarity(incident_data, memory_doc)
             if score > best_score:
                 best_score = score
@@ -195,7 +210,7 @@ async def search_similar_incidents(incident_data: dict) -> dict:
                     pass
 
             result["match"] = {
-                "id": str(best_match["_id"]),
+                "id": str(best_match.get("original_incident_id") or best_match["_id"]),
                 "incident_id": best_match.get("incident_id") or str(best_match.get("original_incident_id", best_match["_id"])),
                 "title": best_match["title"],
                 "severity": best_match.get("severity", "low"),
