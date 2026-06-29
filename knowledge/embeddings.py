@@ -1,42 +1,43 @@
 """
-Vector Store.
+Embedding service.
 
 Purpose:
-    Store and retrieve document embeddings for semantic search.
+    Convert enterprise knowledge documents into vector embeddings
+    for semantic similarity search.
 
 Current Status:
     Placeholder implementation.
 
-Future Options:
-    - FAISS
-    - ChromaDB
-    - Pinecone
+Planned:
+    - Google Gemini Embeddings
+    - Sentence Transformers
+    - OpenAI Embeddings
 """
 
 from typing import List
 
 
-class VectorStore:
-    """Abstract interface for vector storage."""
+class EmbeddingService:
+    """Interface for generating document embeddings."""
 
-    def add_documents(self, embeddings: List, metadata: List):
+    def embed_documents(self, documents: List[str]):
         """
-        Store document embeddings.
+        Generate embeddings for knowledge documents.
 
         TODO:
-            Persist vectors using FAISS or ChromaDB.
+            Replace with a production embedding model.
         """
         raise NotImplementedError(
-            "Vector storage is not implemented yet."
+            "Embedding generation is not implemented yet."
         )
 
-    def similarity_search(self, query_embedding, k: int = 5):
+    def embed_query(self, query: str):
         """
-        Retrieve the top-k most similar documents.
+        Generate embedding for an incident query.
 
         TODO:
-            Perform semantic similarity search.
+            Replace with a production embedding model.
         """
         raise NotImplementedError(
-            "Similarity search is not implemented yet."
+            "Query embedding is not implemented yet."
         )
